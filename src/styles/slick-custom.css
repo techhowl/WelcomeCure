@@ -1,0 +1,87 @@
+/* Custom styles for the testimonial slider */
+.testimonial-slider {
+  position: relative;
+  padding: 0 30px;
+}
+
+.testimonial-slider .slick-list {
+  margin: 0 -10px;
+  padding: 10px 0;
+}
+
+.testimonial-slider .slick-track {
+  display: flex !important;
+  align-items: stretch;
+}
+
+.testimonial-slider .slick-slide {
+  padding: 0 10px;
+  height: auto !important;
+}
+
+.testimonial-slider .slick-slide > div {
+  height: 100%;
+}
+
+/* Custom styling for the active slide */
+.testimonial-slider .slick-current {
+  z-index: 1;
+}
+
+/* Large screens (3 cards) */
+@media (min-width: 1601px) {
+  .testimonial-slider {
+    padding: 0 40px;
+  }
+  
+  .testimonial-slider .slick-slide {
+    padding: 0 12px;
+  }
+  
+  .testimonial-slider-nav-prev {
+    left: -25px !important;
+  }
+  
+  .testimonial-slider-nav-next {
+    right: -25px !important;
+  }
+}
+
+/* Medium screens (2 cards) */
+@media (min-width: 1301px) and (max-width: 1600px) {
+  .testimonial-slider {
+    padding: 0 35px;
+  }
+  
+  .testimonial-slider .slick-slide {
+    padding: 0 12px;
+  }
+}
+
+/* Small laptops (2 cards) */
+@media (min-width: 769px) and (max-width: 1300px) {
+  .testimonial-slider {
+    padding: 0 30px;
+  }
+}
+
+/* Mobile and small tablets */
+@media (max-width: 768px) {
+  .testimonial-slider {
+    padding: 0 20px;
+  }
+  
+  .testimonial-slider-nav-prev {
+    left: -10px !important;
+  }
+  
+  .testimonial-slider-nav-next {
+    right: -10px !important;
+  }
+}
+
+/* Hover effects for controls */
+.testimonial-slider-nav-prev:hover,
+.testimonial-slider-nav-next:hover {
+  transform: translateY(-50%) scale(1.05);
+} 
