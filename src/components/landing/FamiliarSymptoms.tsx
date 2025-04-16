@@ -21,7 +21,7 @@ const symptoms = [
 
 export const FamiliarSymptoms = () => {
   return (
-    <section className="w-full bg-white py-20">
+    <section className="w-full  py-20">
       <div className="container mx-auto px-4 w-full">
         <h2 className="text-[#1A1A1A] text-4xl md:text-5xl font-bold text-center mb-12 md:mb-16">
           Does This Sound Familiar?
@@ -29,11 +29,11 @@ export const FamiliarSymptoms = () => {
         
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-6">
           {symptoms.map((symptom, index) => (
-            <div key={index} className="relative overflow-hidden rounded-2xl h-[280px] sm:h-[320px] shadow-sm">
+            <div key={index} className="relative overflow-hidden rounded-2xl shadow-sm">
               <img
                 src={symptom.image}
                 alt={symptom.title}
-                className="absolute h-full w-full object-cover inset-0 transition-transform duration-300 hover:scale-105"
+                className="h-full w-full object-cover inset-0 transition-transform duration-300 hover:scale-105"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
               <div className="absolute bottom-0 left-0 w-full p-6 text-white">

@@ -46,10 +46,10 @@ export const BookingForm = () => {
 
   return (
     <section className="bg-[#B5E7FF] w-full py-8 md:py-12">
-      <div className="container mx-auto w-full px-4 max-w-[1400px]">
+      <div className="container mx-auto w-full px-4">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 lg:gap-8">
           {/* Left side with sleeping person image and text */}
-          <div className="relative h-[18.75rem] sm:h-[21.875rem] md:h-[25rem] lg:h-full overflow-hidden rounded-xl md:rounded-xl">
+          <div className="relative w-full lg:h-full overflow-hidden rounded-xl md:rounded-xl">
             <img
               src="/assets/form.png"
               alt="Person with sleep disorder"
