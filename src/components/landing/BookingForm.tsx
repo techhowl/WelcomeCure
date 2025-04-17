@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Sparkles } from "lucide-react";
 import { 
   Form,
   FormControl,
@@ -28,7 +28,61 @@ interface BookingFormData {
   problem: string;
 }
 
+const callGeminiAPI = async (text: string): Promise<string> => {
+  // Your Gemini API key (Note: Store this securely in production, e.g., in environment variables)
+  const GEMINI_API_KEY = "AIzaSyCJk0564e6SKLC8D0NT2chWdxfWJu6E-JE";
+
+  try {
+    console.log('Calling Gemini API to enhance text...');
+
+    // Using the correct endpoint for Gemini API with proper API key interpolation
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          contents: [
+            {
+              parts: [
+                {
+                  text: `Do Not say How can I help just fix Grammer and spelling mistake Do not Give Options Please just suggest only one Fix the grammar, spelling, and clarity of this patient's health issue description. Keep all symptoms and concerns the same. Description: "${text}"`
+                }
+              ]
+            }
+          ]
+        })
+      }
+    );
+
+    // Check if the response is successful
+    if (!response.ok) {
+      throw new Error(`Gemini API request failed with status ${response.status}`);
+    }
+
+    // Parse the response
+    const data = await response.json();
+
+    // Extract the enhanced text from the response
+    const enhancedText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+
+    if (!enhancedText) {
+      throw new Error('No enhanced text returned from Gemini API');
+    }
+
+    return enhancedText;
+  } catch (error) {
+    console.error('Error calling Gemini API:', error);
+    throw error; // Rethrow the error for the caller to handle
+  }
+};
+
 export const BookingForm = () => {
+  const [isRefining, setIsRefining] = useState(false);
+  const [refinementError, setRefinementError] = useState<string | null>(null);
+  
   const form = useForm<BookingFormData>({
     defaultValues: {
       fullName: "",
@@ -40,8 +94,34 @@ export const BookingForm = () => {
     }
   });
 
+  // Watch the problem field to enable/disable the button reactively
+  const problemText = form.watch("problem");
+
   const onSubmit = (data: BookingFormData) => {
     console.log(data);
+  };
+  
+  const handleRefineProblem = async () => {
+    const currentProblem = form.getValues("problem");
+    
+    if (!currentProblem.trim()) {
+      // Don't refine empty text
+      return;
+    }
+    
+    setIsRefining(true);
+    setRefinementError(null); // Clear any previous errors
+    
+    try {
+      // Call the Gemini API to enhance the text
+      const refinedText = await callGeminiAPI(currentProblem);
+      form.setValue("problem", refinedText);
+    } catch (error) {
+      console.error('Error during refinement:', error);
+      setRefinementError(error instanceof Error ? error.message : "An error occurred with the AI service");
+    } finally {
+      setIsRefining(false);
+    }
   };
 
   return (
@@ -124,11 +204,42 @@ export const BookingForm = () => {
                   </select>
                 </div>
                 
-                <Textarea 
-                  placeholder="Problem" 
-                  className="bg-white min-h-[120px] sm:min-h-[150px] md:min-h-[180px] rounded-xl text-base resize-none p-3 md:p-4" 
-                  {...form.register("problem")}
-                />
+                <div className="relative">
+                  <Textarea 
+                    placeholder="Explain your symptoms or health concerns (click 'Refine with AI' to improve your description)" 
+                    className="bg-white min-h-[120px] sm:min-h-[150px] md:min-h-[180px] rounded-xl text-base resize-none p-3 md:p-4" 
+                    {...form.register("problem")}
+                  />
+                  
+                  <div className="absolute bottom-3 right-3 z-10">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={handleRefineProblem}
+                      disabled={isRefining || !problemText?.trim()}
+                      className="bg-white border border-[#FBDC00] hover:bg-[#FBDC00]/10 text-black rounded-lg flex items-center gap-2 h-9"
+                    >
+                      {isRefining ? (
+                        <>
+                          <div className="animate-spin h-4 w-4 border-2 border-[#FBDC00] border-t-transparent rounded-full" />
+                          <span>Refining...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Sparkles size={16} className="text-[#FBDC00]" />
+                          <span>Refine with AI</span>
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                  
+                  {refinementError && (
+                    <div className="mt-2 text-xs text-amber-700 bg-amber-50 p-2 rounded-md">
+                      {refinementError}
+                    </div>
+                  )}
+                </div>
                 
                 <Button 
                   type="submit" 

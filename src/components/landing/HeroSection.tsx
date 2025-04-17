@@ -1,7 +1,7 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 export const HeroSection = () => {
-  return <div className="w-full h-screen relative flex flex-col md:flex-row items-center justify-between pt-24 px-4 md:px-0">
+  return <div className="w-full h-auto sm:h-screen relative flex flex-col md:flex-row items-center justify-between pt-24 px-4 md:px-0">
       <div className="container h-auto mx-auto px-4 md:px-8 flex flex-col md:flex-row items-center">
         <div className="w-full md:w-1/2 flex flex-col justify-center py-8 md:py-16 z-10">
           {/* Heading */}

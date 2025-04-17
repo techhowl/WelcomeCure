@@ -59,6 +59,13 @@ export const Testimonials = () => {
         },
       },
       {
+        breakpoint: 1100,
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1,
+        },
+      },
+      {
         breakpoint: 768,
         settings: {
           slidesToShow: 1,
@@ -82,7 +89,7 @@ export const Testimonials = () => {
   };
 
   return (
-    <section className="w-full max-w-[1280px] mt-[67px] px-4 max-md:max-w-full relative mx-auto">
+    <section className="w-full px-4 md:px-28 mt-[67px] max-md:max-w-full mx-auto">
       <h2 className="text-black text-5xl font-bold mb-10 text-center max-md:text-[40px]">
         Sleepy Success Stories
       </h2>
