@@ -30,7 +30,7 @@ export const Footer = () => {
           </div>
           
           <div className="flex gap-4 mt-3">
-            <a href="#" aria-label="Facebook">
+            <a href="https://facebook.com/welcomecure" aria-label="Facebook" target="_blank" rel="noopener noreferrer">
               <div className="w-9 h-9 flex items-center justify-center">
                 <img 
                   src="/assets/facebook.svg" 
@@ -40,7 +40,7 @@ export const Footer = () => {
                 />
               </div>
             </a>
-            <a href="#" aria-label="LinkedIn">
+            <a href="https://linkedin.com/company/welcomecure" aria-label="LinkedIn" target="_blank" rel="noopener noreferrer">
               <div className="w-9 h-9 flex items-center justify-center">
                 <img 
                   src="/assets/linkdlin.svg" 
@@ -50,7 +50,7 @@ export const Footer = () => {
                 />
               </div>
             </a>
-            <a href="#" aria-label="YouTube">
+            <a href="https://youtube.com/c/welcomecure" aria-label="YouTube" target="_blank" rel="noopener noreferrer">
               <div className="w-9 h-9 flex items-center justify-center">
                 <img 
                   src="/assets/youtube.svg" 
@@ -60,10 +60,10 @@ export const Footer = () => {
                 />
               </div>
             </a>
-            <a href="#" aria-label="Facebook">
+            <a href="https://instagram.com/welcomecure" aria-label="Facebook" target="_blank" rel="noopener noreferrer">
               <div className="w-9 h-9 flex items-center justify-center">
                 <img 
-                  src="/assets/facebook.svg" 
+                  src="/assets/instagram.svg" 
                   alt="Instagram" 
                   width={20} 
                   height={20}
