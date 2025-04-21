@@ -125,7 +125,7 @@ export const BookingForm = () => {
   };
 
   return (
-    <section className="bg-[#B5E7FF] w-full py-8 md:py-12">
+    <section className="bg-[#B5E7FF] w-full py-8 md:py-12" id="booking-form">
       <div className="container mx-auto w-full px-4">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 lg:gap-8">
           {/* Left side with sleeping person image and text */}

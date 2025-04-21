@@ -14,10 +14,11 @@ export const DoctorCard: React.FC<DoctorCardProps> = ({
   image,
 }) => {
   return (
-    <div className="bg-[rgba(230,230,230,1)] grow w-full px-[23px] py-[21px] rounded-[15px] max-md:max-w-full max-md:mt-10 max-md:pr-5">
-      <div className="gap-5 flex max-md:flex-col max-md:items-stretch">
-        <div className="w-6/12 max-md:w-full max-md:ml-0">
-          <div className="bg-[rgba(251,220,0,1)] flex w-[257px] shrink-0 h-[257px] aspect-[1] mx-auto rounded-[7px] max-md:mt-9">
+    <div className="bg-[rgba(230,230,230,1)]  w-3/4 md:w-full px-5 py-5 rounded-[15px] h-full">
+      <div className="flex md:flex-row flex-col items-start md:items-center gap-4">
+        {/* Image container - fixed size for consistency */}
+        <div className="md:w-[40%] w-full flex md:justify-center justify-start flex-shrink-0 mb-4 md:mb-0">
+          <div className="bg-[rgba(251,220,0,1)] w-1/2 md:w-full aspect-square  rounded-[7px] overflow-hidden">
             <img
               src={image}
               alt={name}
@@ -25,11 +26,15 @@ export const DoctorCard: React.FC<DoctorCardProps> = ({
             />
           </div>
         </div>
-        <div className="w-6/12 ml-5 max-md:w-full max-md:ml-0">
-          <div className="flex flex-col self-stretch items-stretch text-sm text-[rgba(26,26,26,1)] font-medium my-auto max-md:mt-10">
-            <h3 className="text-[28px] font-bold">{name}</h3>
-            <div className="mt-[19px]">{experience}</div>
-            <p className="leading-[21px] mt-[17px] max-md:mr-[7px]">
+        
+        {/* Text content with responsive font sizes */}
+        <div className="md:w-[60%] w-full">
+          <div className="flex flex-col font-medium">
+            <h3 className="text-xl sm:text-2xl md:text-[24px] lg:text-[28px] font-bold leading-tight mb-2">{name}</h3>
+            <div className="text-xs sm:text-sm md:text-sm lg:text-base mt-1 mb-2 text-[rgba(26,26,26,0.8)]">
+              {experience}
+            </div>
+            <p className="text-xs sm:text-sm md:text-sm lg:text-sm leading-tight sm:leading-normal md:leading-relaxed">
               {description}
             </p>
           </div>

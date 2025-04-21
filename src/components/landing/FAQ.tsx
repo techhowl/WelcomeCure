@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { ChevronDown } from "lucide-react";
 
 const faqItems = [
   {
@@ -41,23 +42,61 @@ const faqItems = [
 ];
 
 export const FAQ = () => {
+  const [openItems, setOpenItems] = useState<Record<string, boolean>>({});
+
+  const handleToggle = (itemValue: string) => {
+    setOpenItems(prevState => {
+      // If the item is already open, close it
+      if (prevState[itemValue]) {
+        const newState = {...prevState};
+        delete newState[itemValue];
+        return newState;
+      }
+      
+      // Otherwise, open it
+      return {
+        ...prevState,
+        [itemValue]: true
+      };
+    });
+  };
+
   return (
-    <section className="w-full max-w-[896px] mx-auto">
-      <h2 className="text-[rgba(26,26,26,1)] text-5xl font-bold leading-none text-center mb-8 max-md:max-w-full max-md:text-[40px]">
-        Frequently Asked Questions
-      </h2>
-      <Accordion type="single" collapsible className="w-full">
-        {faqItems.map((item, index) => (
-          <AccordionItem key={index} value={`item-${index}`}>
-            <AccordionTrigger className="shadow-[0px_5px_16px_0px_rgba(8,15,52,0.06)] bg-white text-lg text-[rgba(26,26,26,1)] font-normal px-[55px] py-[15px] rounded-[15px] max-md:px-5">
-              {item.question}
-            </AccordionTrigger>
-            <AccordionContent className="px-[55px] py-4 text-[rgba(26,26,26,1)]">
-              {item.answer}
-            </AccordionContent>
-          </AccordionItem>
-        ))}
-      </Accordion>
+    <section className="w-full py-6">
+      <div className="max-w-[900px]  mx-auto px-5">
+        <h2 className="text-[#1a1a1a] text-5xl font-bold text-center mb-16 max-md:text-4xl max-md:mb-10">
+          Frequently Asked Questions
+        </h2>
+        <div className="space-y-6">
+          {faqItems.map((item, index) => {
+            const itemValue = `item-${index}`;
+            const isOpen = Boolean(openItems[itemValue]);
+            
+            return (
+              <div 
+                key={index} 
+                className={`bg-white rounded-2xl shadow-[0px_4px_15px_0px_rgba(8,15,52,0.06)] transition-all duration-200 ${isOpen ? 'shadow-lg' : ''}`}
+              >
+                <div className="w-full">
+                  <button 
+                    onClick={() => handleToggle(itemValue)}
+                    className="flex w-full justify-between items-center p-5 text-left hover:no-underline"
+                  >
+                    <span className="font-normal text-lg text-[#1a1a1a]">{item.question}</span>
+                    <div className={`w-10 h-10 min-w-[2.5rem] bg-[#FBDC00] rounded-full flex items-center justify-center transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}>
+                      <ChevronDown className="h-5 w-5 text-black" />
+                    </div>
+                  </button>
+                  
+                  <div className={`p-5 pt-1 text-base text-[#1a1a1a]/80 overflow-hidden transition-all duration-300 ${isOpen ? 'max-h-96' : 'max-h-0 opacity-0 py-0'}`}>
+                    {item.answer}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
     </section>
   );
 };
