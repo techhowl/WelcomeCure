@@ -2,39 +2,79 @@ import React from "react";
 
 export const Footer = () => {
   return (
-    <footer className="bg-white self-stretch flex items-stretch gap-5 overflow-hidden flex-wrap justify-between mt-[71px] px-20 py-[88px] max-md:max-w-full max-md:mr-1.5 max-md:mt-10 max-md:px-5">
-      <div className="flex flex-col items-stretch mt-1 max-md:max-w-full">
-        <h2 className="text-black text-[40px] font-bold leading-[44px] max-md:max-w-full">
-          <span className="font-medium">Ready For</span>
-          <br />
-          <span className="text-[52px] leading-[57px] text-[rgba(29,155,215,1)]">
-            A Good Night's Sleep?
-          </span>
-        </h2>
-        <button className="bg-[rgba(251,220,0,1)] min-h-[54px] gap-2.5 text-2xl text-[rgba(26,26,26,1)] font-semibold text-center mt-[22px] px-[52px] py-[9px] rounded-[15px] max-md:px-5">
-          Get Started Now
-        </button>
-      </div>
-      <div className="flex flex-col items-stretch">
-        <div className="flex w-[184px] max-w-full flex-col items-stretch">
-          <img
-            src="https://cdn.builder.io/api/v1/image/assets/TEMP/b2be3ac9cab27924850280ee8f92794e7c634136?placeholderIfAbsent=true"
-            alt="WelcomeCure Logo"
-            className="aspect-[1] object-contain w-[95px]"
-          />
-          <div className="flex gap-2 mt-3.5">
-            {["https://cdn.builder.io/api/v1/image/assets/TEMP/4330bd5432134a4caee1ff0c5035102b0c58a2a7?placeholderIfAbsent=true", "https://cdn.builder.io/api/v1/image/assets/TEMP/b1a6c13f3c32e3dbdd0a56b79395011cace373f1?placeholderIfAbsent=true", "https://cdn.builder.io/api/v1/image/assets/TEMP/fbe9046dc0ba1172345864d894ef6a2668a02332?placeholderIfAbsent=true", "https://cdn.builder.io/api/v1/image/assets/TEMP/0981d6a75fb6305b9b63010f7dfc0c39395ee417?placeholderIfAbsent=true"].map((icon, index) => (
-              <img
-                key={index}
-                src={icon}
-                alt={`Social icon ${index + 1}`}
-                className="aspect-[1] object-contain w-10 rounded shrink-0"
-              />
-            ))}
-          </div>
+    <footer className="bg-white w-full py-16 md:py-20 px-6 sm:px-8 lg:px-16">
+      <div className="max-w-[1400px] mx-auto flex flex-col md:flex-row justify-between items-start gap-10">
+        {/* Left side with text and button */}
+        <div className="flex flex-col items-start w-full md:w-auto">
+          <h2 className="text-left">
+            <span className="text-black text-2xl md:text-3xl lg:text-[40px] font-medium block leading-tight">Ready For</span>
+            <span className="text-[#1D9BD7] text-4xl mt-5 md:mt-6 md:text-5xl lg:text-[52px] font-bold block leading-tight">A Good Night's Sleep?</span>
+          </h2>
+          <a href="#booking-form" className="mt-5 md:mt-6">
+            <button className="bg-[#FBDC00] w-[240px] h-[54px] rounded-[15px] text-xl font-semibold text-[#1a1a1a] hover:bg-[#FBDC00]/90 transition-colors">
+              Get Started Now
+            </button>
+          </a>
         </div>
-        <div className="text-black text-base font-medium mt-[11px]">
-          ©2025 WelcomeCure • All Rights Reserved
+
+        {/* Right side with logo, social icons and copyright */}
+        <div className="flex flex-col items-start md:items-end gap-4 w-full md:w-auto">
+          <div className="flex items-start justify-start md:justify-center">
+            <img 
+              src="/assets/Logo.svg" 
+              alt="WelcomeCure Logo" 
+              width={100}
+              height={100}
+              className="ml-0"
+            />
+          </div>
+          
+          <div className="flex gap-4 mt-3">
+            <a href="#" aria-label="Facebook">
+              <div className="w-9 h-9 flex items-center justify-center">
+                <img 
+                  src="/assets/facebook.svg" 
+                  alt="Facebook" 
+                  width={20} 
+                  height={20}
+                />
+              </div>
+            </a>
+            <a href="#" aria-label="LinkedIn">
+              <div className="w-9 h-9 flex items-center justify-center">
+                <img 
+                  src="/assets/linkdlin.svg" 
+                  alt="LinkedIn" 
+                  width={20} 
+                  height={20}
+                />
+              </div>
+            </a>
+            <a href="#" aria-label="YouTube">
+              <div className="w-9 h-9 flex items-center justify-center">
+                <img 
+                  src="/assets/youtube.svg" 
+                  alt="YouTube" 
+                  width={20} 
+                  height={20}
+                />
+              </div>
+            </a>
+            <a href="#" aria-label="Facebook">
+              <div className="w-9 h-9 flex items-center justify-center">
+                <img 
+                  src="/assets/facebook.svg" 
+                  alt="Instagram" 
+                  width={20} 
+                  height={20}
+                />
+              </div>
+            </a>
+          </div>
+          
+          <div className="text-[#1a1a1a] text-sm md:text-base font-medium mt-2">
+            ©2025 WelcomeCure • All Rights Reserved
+          </div>
         </div>
       </div>
     </footer>
