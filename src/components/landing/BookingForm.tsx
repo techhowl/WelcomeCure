@@ -19,6 +19,10 @@ import {
 } from "@/components/ui/form";
 import { cn } from "@/lib/utils";
 
+// Access environment variables
+const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY || "AIzaSyCJk0564e6SKLC8D0NT2chWdxfWJu6E-JE";
+const GOOGLE_SCRIPT_URL = import.meta.env.VITE_GOOGLE_SCRIPT_URL || 'https://script.google.com/macros/s/AKfycbxqWCF0PSEFgqpztYrKOMYPoNMiNEbARThv9dbbQIzqhUD1Dz_hFQ6OlcaXJ1CSuTsMOQ/exec';
+
 interface BookingFormData {
   fullName: string;
   age: string;
@@ -29,9 +33,7 @@ interface BookingFormData {
 }
 
 const callGeminiAPI = async (text: string): Promise<string> => {
-  // Your Gemini API key (Note: Store this securely in production, e.g., in environment variables)
-  const GEMINI_API_KEY = "AIzaSyCJk0564e6SKLC8D0NT2chWdxfWJu6E-JE";
-
+  // Use environment variable for API key
   try {
     console.log('Calling Gemini API to enhance text...');
 
@@ -79,9 +81,62 @@ const callGeminiAPI = async (text: string): Promise<string> => {
   }
 };
 
+// Direct Google Sheets submission function
+const submitToGoogleSheets = async (formData: BookingFormData) => {
+  try {
+    // Use environment variable for script URL
+    console.log('Submitting form data:', formData);
+    
+    // Method 1: Try fetch with no-cors first
+    try {
+      await fetch(GOOGLE_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors', // This is crucial for CORS issues with Google Apps Script
+        headers: {
+          'Content-Type': 'text/plain', // Changed from 'application/json' to avoid preflight
+        },
+        body: JSON.stringify(formData),
+      });
+      console.log('Form submitted using fetch no-cors method');
+      return { success: true };
+    } catch (fetchError) {
+      console.warn('Fetch submission failed, trying fallback method:', fetchError);
+      
+      // Method 2: Fallback - Submit via URL parameters (GET request)
+      const params = new URLSearchParams();
+      params.append('fullName', formData.fullName);
+      params.append('age', formData.age || '');
+      params.append('email', formData.email);
+      params.append('phone', formData.phone);
+      params.append('doctorPreference', formData.doctorPreference || '');
+      params.append('problem', formData.problem || '');
+      
+      // Create image for tracking submission (invisible)
+      const img = document.createElement('img');
+      img.style.display = 'none';
+      img.src = `${GOOGLE_SCRIPT_URL}?${params.toString()}`;
+      document.body.appendChild(img);
+      
+      // Remove the image after a delay
+      setTimeout(() => {
+        document.body.removeChild(img);
+      }, 5000);
+      
+      console.log('Form submitted using URL parameters method');
+      return { success: true };
+    }
+  } catch (error) {
+    console.error('Error submitting to Google Sheets:', error);
+    throw error;
+  }
+};
+
 export const BookingForm = () => {
   const [isRefining, setIsRefining] = useState(false);
   const [refinementError, setRefinementError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [submitSuccess, setSubmitSuccess] = useState<string | null>(null);
   
   const form = useForm<BookingFormData>({
     defaultValues: {
@@ -97,8 +152,32 @@ export const BookingForm = () => {
   // Watch the problem field to enable/disable the button reactively
   const problemText = form.watch("problem");
 
-  const onSubmit = (data: BookingFormData) => {
-    console.log(data);
+  const onSubmit = async (data: BookingFormData) => {
+    try {
+      setIsSubmitting(true);
+      setSubmitError(null);
+      setSubmitSuccess(null);
+      
+      // Format doctor preference to make it readable (if it's in kebab-case)
+      const formattedData = {
+        ...data,
+        doctorPreference: data.doctorPreference.replace(/-/g, ' ')
+          .replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase())
+      };
+      
+      // Send data to Google Sheets directly
+      await submitToGoogleSheets(formattedData);
+      
+      // Show success message and reset form
+      setSubmitSuccess('Appointment booked successfully! We will contact you shortly.');
+      form.reset();
+      
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      setSubmitError(error instanceof Error ? error.message : 'An unexpected error occurred');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
   
   const handleRefineProblem = async () => {
@@ -156,6 +235,7 @@ export const BookingForm = () => {
                     placeholder="Full Name" 
                     className="bg-white h-12 md:h-14 rounded-xl text-base" 
                     {...form.register("fullName")}
+                    required
                   />
                   <Input 
                     placeholder="Age" 
@@ -170,11 +250,13 @@ export const BookingForm = () => {
                     className="bg-white h-12 md:h-14 rounded-xl text-base" 
                     type="email" 
                     {...form.register("email")}
+                    required
                   />
                   <Input 
                     placeholder="Phone Number" 
                     className="bg-white h-12 md:h-14 rounded-xl text-base" 
                     {...form.register("phone")}
+                    required
                   />
                 </div>
                 
@@ -241,11 +323,29 @@ export const BookingForm = () => {
                   )}
                 </div>
                 
+                {submitSuccess && (
+                  <div className="p-3 bg-green-50 text-green-700 rounded-md text-sm">
+                    {submitSuccess}
+                  </div>
+                )}
+                
+                {submitError && (
+                  <div className="p-3 bg-red-50 text-red-700 rounded-md text-sm">
+                    {submitError}
+                  </div>
+                )}
+                
                 <Button 
                   type="submit" 
                   className="w-full bg-[#FBDC00] hover:bg-[#FBDC00]/90 text-black font-semibold text-base md:text-lg h-12 md:h-14 rounded-xl"
+                  disabled={isSubmitting}
                 >
-                  Book your appointment
+                  {isSubmitting ? (
+                    <div className="flex items-center gap-2">
+                      <div className="animate-spin h-5 w-5 border-2 border-current border-t-transparent rounded-full" />
+                      <span>Submitting...</span>
+                    </div>
+                  ) : "Book your appointment"}
                 </Button>
               </form>
             </Form>
