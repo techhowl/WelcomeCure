@@ -1,5 +1,18 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import gsap from "gsap";
+
+// Extend HTMLDivElement to include our event handler properties
+declare global {
+  interface HTMLDivElement {
+    _mouseEnterHandler?: (event: MouseEvent) => void;
+    _mouseLeaveHandler?: (event: MouseEvent) => void;
+    _touchStartHandler?: (event: TouchEvent) => void;
+  }
+}
 
 const symptoms = [
   { 
@@ -22,159 +35,220 @@ const symptoms = [
     image: "/assets/productivity.png",
     backText: "Even mild insomnia can lead to more than 50% reduction in productivity levels"
   },
+  // Duplicate cards to have 8 total
+  { 
+    title: "FSnoring", 
+    image: "/assets/snoring.png",
+    backText: "Regular snoring is associated with an 87-95% increased risk of uncontrolled hypertension"
+  },
+  { 
+    title: "Fatigue", 
+    image: "/assets/fatigue.png",
+    backText: "Fatigue leads to 10-25% of all road accidents"
+  },
+  { 
+    title: "Insomnia", 
+    image: "/assets/insomnia.png",
+    backText: "40% of adults with insomnia also have psychiatric disorders, most likely depression"
+  },
+  { 
+    title: "Reduced Productivity", 
+    image: "/assets/productivity.png",
+    backText: "Even mild insomnia can lead to more than 50% reduction in productivity levels"
+  },
 ];
 
+// Custom arrow components for the slider
+const PrevArrow = (props: any) => {
+  const { onClick } = props;
+  return (
+    <button
+      onClick={onClick}
+      className="absolute left-0 top-1/2 -translate-y-1/2 z-10 -ml-5 md:-ml-6 bg-[#FBDC00] rounded-full w-10 h-10 md:w-12 md:h-12 flex items-center justify-center shadow-md hover:bg-[#FBDC00]/90 focus:outline-none"
+      aria-label="Previous"
+    >
+      <ChevronLeft className="w-6 h-6 text-black" />
+    </button>
+  );
+};
+
+const NextArrow = (props: any) => {
+  const { onClick } = props;
+  return (
+    <button
+      onClick={onClick}
+      className="absolute right-0 top-1/2 -translate-y-1/2 z-10 -mr-5 md:-mr-6 bg-[#FBDC00] rounded-full w-10 h-10 md:w-12 md:h-12 flex items-center justify-center shadow-md hover:bg-[#FBDC00]/90 focus:outline-none"
+      aria-label="Next"
+    >
+      <ChevronRight className="w-6 h-6 text-black" />
+    </button>
+  );
+};
+
 export const FamiliarSymptoms = () => {
-  const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const flippedStates = useRef<boolean[]>([false, false, false, false]);
+  const sliderRef = useRef<Slider | null>(null);
   
+  // Slick slider settings
+  const settings = {
+    dots: false,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 4,
+    slidesToScroll: 1,
+    prevArrow: <PrevArrow />,
+    nextArrow: <NextArrow />,
+    autoplay: true,
+    autoplaySpeed: 2000,
+    pauseOnHover: true,
+    responsive: [
+      {
+        breakpoint: 1024,
+        settings: {
+          slidesToShow: 3,
+          slidesToScroll: 1
+        }
+      },
+      {
+        breakpoint: 768,
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 1
+        }
+      },
+      {
+        breakpoint: 640,
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1,
+          centerMode: true,
+          centerPadding: '30px'
+        }
+      }
+    ]
+  };
+  
+  // Add CSS for the 3D flip effect
   useEffect(() => {
-    // Add CSS for 3D effect
     const style = document.createElement('style');
     style.innerHTML = `
       .flip-card {
         perspective: 1000px;
-        transform-style: preserve-3d;
-        border-radius: 1rem;
-        overflow: hidden;
         background-color: transparent;
+        width: 100%;
+        height: 320px;
+        border-radius: 16px;
+        cursor: pointer;
       }
+      
       .flip-card-inner {
         position: relative;
         width: 100%;
         height: 100%;
-        transition: transform 0.8s;
+        text-align: center;
+        transition: transform 0.6s;
         transform-style: preserve-3d;
-        background-color: transparent;
+        box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+        border-radius: 16px;
       }
+      
+      /* Add hover effect directly with CSS */
+      .flip-card:hover .flip-card-inner {
+        transform: rotateY(180deg);
+      }
+      
       .card-front, .card-back {
-        -webkit-backface-visibility: hidden;
-        backface-visibility: hidden;
-        transform-style: preserve-3d;
         position: absolute;
         width: 100%;
         height: 100%;
-        border-radius: 1rem;
+        -webkit-backface-visibility: hidden; /* Safari */
+        backface-visibility: hidden;
+        border-radius: 16px;
         overflow: hidden;
+      }
+      
+      .card-front {
         background-color: transparent;
       }
+      
       .card-back {
+        background-color: transparent;
         transform: rotateY(180deg);
       }
-      .flip-card.flipped .flip-card-inner {
-        transform: rotateY(180deg);
+      
+      /* Fix for slider to handle 3D properly */
+      .slick-slide {
+        visibility: visible !important;
+        pointer-events: auto !important;
+        z-index: auto !important;
+      }
+      
+      .slick-track, .slick-list {
+        z-index: auto !important;
+      }
+      
+      /* Apply these styles to ensure slider elements don't interfere with 3D effect */
+      .familiar-symptoms-slider .slick-slide,
+      .familiar-symptoms-slider .slick-slide > div,
+      .familiar-symptoms-slider .slick-track,
+      .familiar-symptoms-slider .slick-list {
+        background-color: transparent !important;
+      }
+      
+      /* Add scale effect on hover */
+      .flip-card:hover {
+        z-index: 10;
       }
     `;
     document.head.appendChild(style);
     
-    // Add interaction events to each card
-    cardRefs.current.forEach((card, index) => {
-      if (!card) return;
-      
-      // Function to toggle card flip
-      const toggleFlip = () => {
-        if (flippedStates.current[index]) {
-          card.classList.remove('flipped');
-        } else {
-          card.classList.add('flipped');
-        }
-        flippedStates.current[index] = !flippedStates.current[index];
-      };
-      
-      // Add hover effects
-      let hoverScale = gsap.timeline({ paused: true });
-      hoverScale.to(card, {
-        scale: 1.05,
-        boxShadow: "0 20px 30px rgba(0, 0, 0, 0.2)",
-        duration: 0.3,
-        ease: "power2.out"
-      });
-      
-      // Mouse events for desktop
-      card.addEventListener("mouseenter", () => {
-        if (!flippedStates.current[index]) {
-          toggleFlip();
-          hoverScale.play();
-        }
-      });
-      
-      card.addEventListener("mouseleave", () => {
-        if (flippedStates.current[index]) {
-          toggleFlip();
-          hoverScale.reverse();
-        }
-      });
-      
-      // Touch events for mobile
-      card.addEventListener("touchstart", (e) => {
-        e.preventDefault(); // Prevent default touch behavior
-        toggleFlip();
-        if (!flippedStates.current[index]) {
-          hoverScale.reverse();
-        } else {
-          hoverScale.play();
-        }
-      });
-    });
-    
     return () => {
-      // Cleanup
-      cardRefs.current.forEach((card) => {
-        if (card) {
-          card.removeEventListener("mouseenter", () => {});
-          card.removeEventListener("mouseleave", () => {});
-          card.removeEventListener("touchstart", () => {});
-        }
-      });
-      
-      // Remove the style element
       document.head.removeChild(style);
     };
   }, []);
   
   return (
-    <section className="w-full py-20">
+    <section className="w-full py-20 relative">
       <div className="container mx-auto px-4 w-full">
         <h2 className="text-[#1A1A1A] text-4xl md:text-5xl font-bold text-center mb-12 md:mb-16">
           Does This Sound Familiar?
         </h2>
         
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-8">
-          {symptoms.map((symptom, index) => (
-            <div 
-              key={index} 
-              className="flip-card relative shadow-lg cursor-pointer h-[320px]"
-              ref={el => cardRefs.current[index] = el}
-            >
-              <div className="flip-card-inner w-full h-full">
-                {/* Front face of card */}
-                <div className="card-front absolute w-full h-full">
-                  <img
-                    src={symptom.image}
-                    alt={symptom.title}
-                    className="h-full w-full object-cover inset-0"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
-                  <div className="absolute bottom-0 left-0 w-full p-6 text-white transform translate-z-[50px]">
-                    <h3 className="text-2xl md:text-3xl font-bold">{symptom.title}</h3>
-                  </div>
-                </div>
-                
-                {/* Back face of card */}
-                <div className="card-back absolute w-full h-full text-white flex items-center justify-center p-6">
-                  <img
-                    src={symptom.image}
-                    alt={symptom.title}
-                    className="absolute h-full w-full object-cover inset-0 z-0"
-                  />
-                  <div className="absolute inset-0 bg-black/75 z-10"></div>
-                  <div className="absolute bottom-0 left-0 p-6 z-20 text-left w-full">
-                    <p className="text-sm font-medium leading-relaxed text-white">{symptom.backText}</p>
+        <div className="relative px-6 md:px-10">
+          <Slider ref={sliderRef} {...settings} className="familiar-symptoms-slider">
+            {symptoms.map((symptom, index) => (
+              <div key={index} className="px-2 md:px-4">
+                <div className="flip-card">
+                  <div className="flip-card-inner">
+                    {/* Front of Card */}
+                    <div className="card-front">
+                      <img
+                        src={symptom.image}
+                        alt={symptom.title}
+                        className="h-full w-full object-cover"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+                      <div className="absolute text-left bottom-0 left-0 w-full p-6 text-white">
+                        <h3 className="text-2xl md:text-3xl font-bold">{symptom.title}</h3>
+                      </div>
+                    </div>
+                    
+                    {/* Back of Card */}
+                    <div className="card-back">
+                      <img
+                        src={symptom.image}
+                        alt={symptom.title}
+                        className="absolute h-full w-full object-cover inset-0 z-0"
+                      />
+                      <div className="absolute inset-0 bg-black/75 z-10"></div>
+                      <div className="absolute bottom-0 left-0 p-6 z-20 text-left w-full">
+                        <p className="text-sm font-medium leading-relaxed text-white">{symptom.backText}</p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </Slider>
         </div>
         
         <div className="mt-16 text-center">
@@ -184,9 +258,11 @@ export const FamiliarSymptoms = () => {
             with our expert evaluation.
           </p>
           
-          <button className="mt-8 md:mt-10 bg-[#FBDC00] hover:bg-[#FBDC00]/90 text-black font-semibold text-xl px-10 py-4 rounded-xl transition-all">
-            Get Started Now
-          </button>
+          <a href="#booking-form" className="inline-block">
+            <button className="mt-8 md:mt-10 bg-[#FBDC00] hover:bg-[#FBDC00]/90 text-black font-semibold text-xl px-10 py-4 rounded-xl transition-all">
+              Get Started Now
+            </button>
+          </a>
         </div>
       </div>
     </section>

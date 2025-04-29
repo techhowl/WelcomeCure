@@ -129,7 +129,7 @@ export const HeroSection = () => {
       
       {/* Right Image - Absolute positioned to stick to the right */}
       <div className="min-[768px]:absolute right-0 bottom-0 w-full min-[768px]:w-1/2 block">
-        <img alt="Woman with pillow" className="object-cover h-full w-full object-top" src="/assets/heresecimg.png" />
+        <img alt="Woman with pillow" className="object-cover h-full w-full object-top" src="/assets/heresecimg.webp" />
       </div>
     </div>;
 };
