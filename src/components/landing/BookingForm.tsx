@@ -683,4 +683,3 @@ export const BookingForm = () => {
     </section>
   );
 };
-

@@ -26,7 +26,7 @@ const symptoms = [
     backText: "Fatigue leads to 10-25% of all road accidents"
   },
   { 
-    title: "Insomnia", 
+    title: "Lack of Sleep (Insomnia)", 
     image: "/assets/insomnia.png",
     backText: "40% of adults with insomnia also have psychiatric disorders, most likely depression"
   },
@@ -37,24 +37,24 @@ const symptoms = [
   },
   // Duplicate cards to have 8 total
   { 
-    title: "FSnoring", 
+    title: "Daytime Drowsiness", 
     image: "/assets/snoring.png",
-    backText: "Regular snoring is associated with an 87-95% increased risk of uncontrolled hypertension"
+    backText: "82% of people with daytime drowsiness suffer from mental health issues"
   },
   { 
-    title: "Fatigue", 
+    title: "Sleep Paralysis", 
     image: "/assets/fatigue.png",
-    backText: "Fatigue leads to 10-25% of all road accidents"
+    backText: "Sleep paralysis leads to an increased risk of chronic illnesses"
   },
   { 
-    title: "Insomnia", 
+    title: "Creepy-Crawly” Sensations", 
     image: "/assets/insomnia.png",
-    backText: "40% of adults with insomnia also have psychiatric disorders, most likely depression"
+    backText: "Over 50% of people affected by this symptom face risk of cognitive impairment"
   },
   { 
-    title: "Reduced Productivity", 
+    title: "Restless Leg Movements", 
     image: "/assets/productivity.png",
-    backText: "Even mild insomnia can lead to more than 50% reduction in productivity levels"
+    backText: "29% of adults face sleep disruption due to uncontrollable leg movements"
   },
 ];
 
@@ -206,6 +206,14 @@ export const FamiliarSymptoms = () => {
     };
   }, []);
   
+  // Add scroll to booking form function
+  const scrollToBookingForm = () => {
+    const bookingForm = document.getElementById('booking-form');
+    if (bookingForm) {
+      bookingForm.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+  
   return (
     <section className="w-full py-20 relative">
       <div className="container mx-auto px-4 w-full">
@@ -258,11 +266,12 @@ export const FamiliarSymptoms = () => {
             with our expert evaluation.
           </p>
           
-          <a href="#booking-form" className="inline-block">
-            <button className="mt-8 md:mt-10 bg-[#FBDC00] hover:bg-[#FBDC00]/90 text-black font-semibold text-xl px-10 py-4 rounded-xl transition-all">
-              Get Started Now
-            </button>
-          </a>
+          <button 
+            className="mt-8 md:mt-10 bg-[#FBDC00] hover:bg-[#FBDC00]/90 text-black font-semibold text-xl px-10 py-4 rounded-xl transition-all"
+            onClick={scrollToBookingForm}
+          >
+            Get Started Now
+          </button>
         </div>
       </div>
     </section>

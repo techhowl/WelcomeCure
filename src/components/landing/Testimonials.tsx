@@ -9,30 +9,30 @@ import "@/styles/slick-custom.css";
 const testimonials = [
   {
     quote:
-      "I met Dr. Shah 6 months ago and my condition has improved greatly since then. I had very stiff joints and was dependent on my parents to do my work. It was Dr. Shah's medicines that helped my condition improve.",
+    "“I met Dr. Shah 6 months ago and my condition has improved greatly since then. I had very stiff joints and was dependent on my parents to do my work. It was Dr. Shah’s medicines that helped my condition improve.”",
     name: "Kangsha Patel",
     title: "Rheumatoid Arthritis Patient",
     avatar: "https://cdn.builder.io/api/v1/image/assets/TEMP/6d219188da2de96c35ea5989522eb24b1c049649?placeholderIfAbsent=true",
   },
   {
     quote:
-      "I had been suffering from a lot of small chronic diseases and it had become an irritating part of my life. I decided to come to the Welcome Cure clinic. I had a fissure at the time and with Dr Jawahar's medicines, I felt much better in just 10-15 days.",
+      "“I had been suffering from a lot of small chronic diseases and it had become an irritating part of my life. I decided to come to the Welcome Cure clinic. I had a fissure at the time and with Dr Jawahar’s medicines, I felt much better in just 10-15 days.”",
     name: "Akash Sharma",
     title: "Chronic Illness Patient",
     avatar: "https://cdn.builder.io/api/v1/image/assets/TEMP/6d219188da2de96c35ea5989522eb24b1c049649?placeholderIfAbsent=true",
   },
   {
     quote:
-      "I was suffering from severe migraine headaches for over 5 years. After trying several treatments without success, I found Welcome Cure. Dr. Shah's personalized approach and natural medicines helped reduce my headaches by 90% in just 2 months.",
-    name: "Priya Mehta",
-    title: "Migraine Patient",
+      "“My son Arhan has been suffering from Bronchitis since birth. We came to Dr Jawahar last year and with his medicine, in a period of 8-9 months, he has shown great improvement. The treatment has done wonders for him and I would like to thank Dr Jawahar Shah.” - Arhan’s Father.",
+    name: "Arhan Bhandari",
+    title: "Bronchitis Patient",
     avatar: "https://cdn.builder.io/api/v1/image/assets/TEMP/6d219188da2de96c35ea5989522eb24b1c049649?placeholderIfAbsent=true",
   },
   {
     quote:
-      "My son had chronic asthma since childhood. We tried conventional treatments but the side effects were concerning. The homeopathic treatment from Welcome Cure has significantly improved his condition with no side effects. He can now play sports without using an inhaler.",
-    name: "Rajesh Kumar",
-    title: "Parent of Asthma Patient",
+      "“I have been suffering from Allergic Rhinitus for the past 8-10 years. I tried curing this with allopathy but the cure lasted only as long as the treatment was on. I decided to start my treatment again with Welcome Cure and in a span of only 3 months, my condition is 90% better.”",
+    name: "Pradeep Singh",
+    title: "Allergic Rhinitus Patient",
     avatar: "https://cdn.builder.io/api/v1/image/assets/TEMP/6d219188da2de96c35ea5989522eb24b1c049649?placeholderIfAbsent=true",
   },
 ];
@@ -91,7 +91,7 @@ export const Testimonials = () => {
   return (
     <section className="w-full px-4 md:px-28 mt-[67px] max-md:max-w-full mx-auto">
       <h2 className="text-black text-5xl font-bold mb-10 text-center max-md:text-[40px]">
-        Sleepy Success Stories
+      Welcome Cure Success Stories
       </h2>
       
       <div className="relative">

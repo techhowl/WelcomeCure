@@ -101,6 +101,14 @@ export const HeroSection = () => {
     };
   }, []);
   
+  // Add scroll to booking form function
+  const scrollToBookingForm = () => {
+    const bookingForm = document.getElementById('booking-form');
+    if (bookingForm) {
+      bookingForm.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+  
   return <div className="w-full h-auto sm:h-screen relative flex flex-col md:flex-row items-center justify-between pt-24 px-4 md:px-0">
       <div className="container h-auto mx-auto px-4 md:px-8 flex flex-col md:flex-row items-center">
         <div className="w-full md:w-1/2 flex flex-col justify-center py-8 md:py-16 z-10">
@@ -120,7 +128,10 @@ export const HeroSection = () => {
           
           {/* CTA Button */}
           <div className="flex justify-start md:justify-start">
-            <Button className="bg-[#FBDC00] hover:bg-[#FBDC00]/90 text-black font-medium text-xl py-6 px-10 rounded-xl w-fit">
+            <Button 
+              className="bg-[#FBDC00] hover:bg-[#FBDC00]/90 text-black font-medium text-xl py-6 px-10 rounded-xl w-fit"
+              onClick={scrollToBookingForm}
+            >
               Get Started Now
             </Button>
           </div>

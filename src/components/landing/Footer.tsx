@@ -1,6 +1,14 @@
 import React from "react";
 
 export const Footer = () => {
+  // Add scroll to booking form function
+  const scrollToBookingForm = () => {
+    const bookingForm = document.getElementById('booking-form');
+    if (bookingForm) {
+      bookingForm.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <footer className="bg-white w-full py-16 md:py-20 px-6 sm:px-8 lg:px-16">
       <div className="max-w-[1400px] mx-auto flex flex-col md:flex-row justify-between items-start gap-10">
@@ -10,11 +18,12 @@ export const Footer = () => {
             <span className="text-black text-2xl md:text-3xl lg:text-[40px] font-medium block leading-tight">Ready For</span>
             <span className="text-[#1D9BD7] text-4xl mt-5 md:mt-6 md:text-5xl lg:text-[52px] font-bold block leading-tight">A Good Night's Sleep?</span>
           </h2>
-          <a href="#booking-form" className="mt-5 md:mt-6">
-            <button className="bg-[#FBDC00] w-[240px] h-[54px] rounded-[15px] text-xl font-semibold text-[#1a1a1a] hover:bg-[#FBDC00]/90 transition-colors">
-              Get Started Now
-            </button>
-          </a>
+          <button 
+            className="mt-5 md:mt-6 bg-[#FBDC00] w-[240px] h-[54px] rounded-[15px] text-xl font-semibold text-[#1a1a1a] hover:bg-[#FBDC00]/90 transition-colors"
+            onClick={scrollToBookingForm}
+          >
+            Get Started Now
+          </button>
         </div>
 
         {/* Right side with logo, social icons and copyright */}

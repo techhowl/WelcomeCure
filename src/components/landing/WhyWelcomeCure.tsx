@@ -20,6 +20,13 @@ const features = [
 ];
 
 export const WhyWelcomeCure = () => {
+  const scrollToBookingForm = () => {
+    const bookingForm = document.getElementById('booking-form');
+    if (bookingForm) {
+      bookingForm.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <section className="w-full px-5 md:px-20 mx-auto">
       <div className="bg-[#E6E6E6] flex flex-col items-start sm:items-center px-5 sm:px-10 md:px-20 py-10 md:py-14 rounded-[15px]">
@@ -59,7 +66,10 @@ export const WhyWelcomeCure = () => {
             ))}
           </div>
         </div>
-        <button className="bg-[#FBDC00] w-full sm:max-w-[297px] text-lg sm:text-xl md:text-2xl text-[#1A1A1A] font-semibold text-center mt-8 sm:mt-10 md:mt-14 py-2 md:py-3 rounded-[15px]">
+        <button 
+          className="bg-[#FBDC00] w-full sm:max-w-[297px] text-lg sm:text-xl md:text-2xl text-[#1A1A1A] font-semibold text-center mt-8 sm:mt-10 md:mt-14 py-2 md:py-3 rounded-[15px]"
+          onClick={scrollToBookingForm}
+        >
           Get Started Now
         </button>
       </div>
