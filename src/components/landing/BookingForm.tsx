@@ -454,12 +454,12 @@ export const BookingForm = () => {
           {/* Left side with sleeping person image and text */}
           <div className="relative w-full lg:h-full overflow-hidden rounded-xl md:rounded-xl">
             <img
-              src="/assets/form.png"
+              src="/assets/form.webp"
               alt="Person with sleep disorder"
               className="w-full h-full object-cover object-center"
             />
-            <div className="absolute inset-0 flex flex-col justify-end p-4 sm:p-6 md:p-8 bg-gradient-to-t from-black/80 to-transparent">
-              <div className="text-white">
+            <div className="absolute inset-0 flex flex-col justify-start p-4 sm:p-6 md:p-8">
+              <div className="text-[#1D9BD7]">
                 <h3 className="text-xl sm:text-2xl font-normal mb-2 md:mb-2">
                   Don't sleep on potential sleep disorders.
                 </h3>

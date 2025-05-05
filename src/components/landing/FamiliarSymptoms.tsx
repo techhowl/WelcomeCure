@@ -17,7 +17,7 @@ declare global {
 const symptoms = [
   { 
     title: "Snoring", 
-    image: "/assets/snoring.png",
+    image: "/assets/snorning.webp",
     backText: "Regular snoring is associated with an 87-95% increased risk of uncontrolled hypertension"
   },
   { 
@@ -27,7 +27,7 @@ const symptoms = [
   },
   { 
     title: "Lack of Sleep (Insomnia)", 
-    image: "/assets/insomnia.png",
+    image: "/assets/insomnialak.webp",
     backText: "40% of adults with insomnia also have psychiatric disorders, most likely depression"
   },
   { 
@@ -38,22 +38,22 @@ const symptoms = [
   // Duplicate cards to have 8 total
   { 
     title: "Daytime Drowsiness", 
-    image: "/assets/snoring.png",
+    image: "/assets/daytime.webp",
     backText: "82% of people with daytime drowsiness suffer from mental health issues"
   },
   { 
     title: "Sleep Paralysis", 
-    image: "/assets/fatigue.png",
+    image: "/assets/sleepparali.webp",
     backText: "Sleep paralysis leads to an increased risk of chronic illnesses"
   },
   { 
     title: "Creepy-Crawly” Sensations", 
-    image: "/assets/insomnia.png",
+    image: "/assets/creepycrawl.webp",
     backText: "Over 50% of people affected by this symptom face risk of cognitive impairment"
   },
   { 
     title: "Restless Leg Movements", 
-    image: "/assets/productivity.png",
+    image: "/assets/restless.webp",
     backText: "29% of adults face sleep disruption due to uncontrollable leg movements"
   },
 ];

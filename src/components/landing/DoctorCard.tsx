@@ -31,10 +31,10 @@ export const DoctorCard: React.FC<DoctorCardProps> = ({
         <div className="md:w-[60%] w-full">
           <div className="flex flex-col font-medium">
             <h3 className="text-xl sm:text-2xl md:text-[24px] lg:text-[28px] font-bold leading-tight mb-2">{name}</h3>
-            <div className="text-xs sm:text-sm md:text-sm lg:text-base mt-1 mb-2 text-[rgba(26,26,26,0.8)]">
+            <div className="text-xs sm:text-sm md:text-lg lg:text-lg mt-1 mb-2 text-balck">
               {experience}
             </div>
-            <p className="text-xs sm:text-sm md:text-sm lg:text-sm leading-tight sm:leading-normal md:leading-relaxed">
+            <p className="text-xs w-10/12 sm:text-sm md:text-lg lg:text-lg leading-tight sm:leading-normal md:leading-relaxed">
               {description}
             </p>
           </div>

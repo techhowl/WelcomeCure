@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 
 const features = [
   {
@@ -17,6 +17,22 @@ const features = [
     icon: "/assets/ExpertPanel.svg",
     title: "Expert Panel of Qualified Doctors",
   },
+  {
+    icon: "/assets/onlidoc.svg",
+    title: "Online Doctor Consultation",
+  },
+  {
+    icon: "/assets/wordlarg.svg",
+    title: "World’s Largest Database of Cured Patients",
+  },
+  {
+    icon: "/assets/SafeInsurance.svg",
+    title: "A Secure Vault For Your Information",
+  },
+  {
+    icon: "/assets/adherence.svg",
+    title: "Adherence To Global Standards",
+  },
 ];
 
 export const WhyWelcomeCure = () => {
@@ -26,6 +42,43 @@ export const WhyWelcomeCure = () => {
       bookingForm.scrollIntoView({ behavior: 'smooth' });
     }
   };
+
+  const [currentIndex, setCurrentIndex] = useState(0);
+  
+  // Calculate visible count based on screen size
+  const getVisibleCount = () => {
+    if (typeof window !== 'undefined') {
+      if (window.innerWidth >= 1150) return 4;
+      if (window.innerWidth >= 900) return 3;
+      if (window.innerWidth >= 640) return 2;
+      return 1;
+    }
+    return 4; // Default for SSR
+  };
+
+  const [visibleCount, setVisibleCount] = useState(4);
+
+  // Handle resize
+  useEffect(() => {
+    const handleResize = () => {
+      setVisibleCount(getVisibleCount());
+    };
+    
+    handleResize(); // Initial call
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Auto-scroll every 2 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentIndex(prev => (prev + 1) % (features.length - visibleCount + 1));
+    }, 2000);
+    
+    return () => clearInterval(interval);
+  }, [visibleCount]);
+
+  const visibleFeatures = features.slice(currentIndex, currentIndex + visibleCount);
 
   return (
     <section className="w-full px-5 md:px-20 mx-auto">
@@ -46,21 +99,23 @@ export const WhyWelcomeCure = () => {
           </span>
           <span> to cure your sleep problems.</span>
         </p>
-        <div className="w-full mt-8 sm:mt-10 md:mt-14">
-          <div className="flex flex-col sm:flex-row sm:flex-wrap md:flex-nowrap justify-start sm:justify-between gap-6 md:gap-5">
+        <div className="w-full mt-8 sm:mt-10 md:mt-14 overflow-hidden">
+          <div className="flex flex-row justify-start transition-all duration-500 ease-in-out" style={{ width: `${(100 / visibleCount) * features.length}%`, transform: `translateX(-${(currentIndex * 100) / features.length}%)` }}>
             {features.map((feature, index) => (
-              <div key={index} className="w-full sm:w-1/2 md:w-1/4 flex flex-col sm:items-center">
-                <div className="w-full flex justify-center">
-                  {feature.icon && (
-                    <img
-                      src={feature.icon}
-                      alt={feature.title.split(" ")[0]}
-                      className="w-16 sm:w-20 md:w-24 h-16 sm:h-20 md:h-24 object-contain"
-                    />
-                  )}
-                </div>
-                <div className="text-sm sm:text-base md:text-lg lg:text-xl text-[#1A1A1A] font-medium text-center sm:text-center leading-tight mt-3 sm:mt-4 md:mt-6 max-w-full whitespace-pre-line">
-                  {feature.title.replace(" and ", "\nand ").replace("Treatment Plans", "Treatment\nPlans").replace("Qualified Doctors", "Qualified\nDoctors").replace("Class Medicines", "Class\nMedicines")}
+              <div key={index} className={`w-full flex-shrink-0`} style={{ width: `${100 / features.length}%` }}>
+                <div className="px-2 flex flex-col items-center">
+                  <div className="w-full flex justify-center">
+                    {feature.icon && (
+                      <img
+                        src={feature.icon}
+                        alt={feature.title.split(" ")[0]}
+                        className="w-16 sm:w-20 md:w-24 h-16 sm:h-20 md:h-24 object-contain"
+                      />
+                    )}
+                  </div>
+                  <div className="text-sm sm:text-base md:text-lg lg:text-xl text-[#1A1A1A] font-medium text-center leading-tight mt-3 sm:mt-4 md:mt-6 max-w-full whitespace-pre-line">
+                    {feature.title.replace(" and ", "\nand ").replace("Treatment Plans", "Treatment\nPlans").replace("Qualified Doctors", "Qualified\nDoctors").replace("Class Medicines", "Class\nMedicines")}
+                  </div>
                 </div>
               </div>
             ))}

@@ -5,6 +5,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import "@/styles/slick-custom.css";
 
+
 // Testimonial data moved from index.tsx
 const testimonials = [
   {
@@ -12,30 +13,30 @@ const testimonials = [
     "“I met Dr. Shah 6 months ago and my condition has improved greatly since then. I had very stiff joints and was dependent on my parents to do my work. It was Dr. Shah’s medicines that helped my condition improve.”",
     name: "Kangsha Patel",
     title: "Rheumatoid Arthritis Patient",
-    avatar: "https://cdn.builder.io/api/v1/image/assets/TEMP/6d219188da2de96c35ea5989522eb24b1c049649?placeholderIfAbsent=true",
+    avatar: '/assets/ladiesavator.webp',
   },
   {
     quote:
       "“I had been suffering from a lot of small chronic diseases and it had become an irritating part of my life. I decided to come to the Welcome Cure clinic. I had a fissure at the time and with Dr Jawahar’s medicines, I felt much better in just 10-15 days.”",
     name: "Akash Sharma",
     title: "Chronic Illness Patient",
-    avatar: "https://cdn.builder.io/api/v1/image/assets/TEMP/6d219188da2de96c35ea5989522eb24b1c049649?placeholderIfAbsent=true",
+    avatar: "/assets/manavator.webp",
   },
   {
     quote:
       "“My son Arhan has been suffering from Bronchitis since birth. We came to Dr Jawahar last year and with his medicine, in a period of 8-9 months, he has shown great improvement. The treatment has done wonders for him and I would like to thank Dr Jawahar Shah.” - Arhan’s Father.",
     name: "Arhan Bhandari",
     title: "Bronchitis Patient",
-    avatar: "https://cdn.builder.io/api/v1/image/assets/TEMP/6d219188da2de96c35ea5989522eb24b1c049649?placeholderIfAbsent=true",
+    avatar: "/assets/manavator.webp",
   },
   {
     quote:
       "“I have been suffering from Allergic Rhinitus for the past 8-10 years. I tried curing this with allopathy but the cure lasted only as long as the treatment was on. I decided to start my treatment again with Welcome Cure and in a span of only 3 months, my condition is 90% better.”",
     name: "Pradeep Singh",
     title: "Allergic Rhinitus Patient",
-    avatar: "https://cdn.builder.io/api/v1/image/assets/TEMP/6d219188da2de96c35ea5989522eb24b1c049649?placeholderIfAbsent=true",
+    avatar: "/assets/manavator.webp",
   },
-];
+];  
 
 export const Testimonials = () => {
   const sliderRef = useRef<Slider>(null);
