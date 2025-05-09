@@ -23,8 +23,8 @@ export const Footer = () => {
               className="ml-0 mb-5"
             />
           <h2 className="text-left">
-            <span className="text-black text-2xl md:text-3xl lg:text-[40px] font-medium block leading-tight">Ready For</span>
-            <span className="text-[#1D9BD7] text-4xl mt-4 md:mt-4 md:text-5xl lg:text-[52px] font-bold block leading-tight">A Good Night's Sleep?</span>
+            <span className="text-black text-xl md:text-3xl lg:text-[40px] font-medium block leading-tight">Ready For</span>
+            <span className="text-[#1D9BD7] text-2xl mt-4 md:mt-4 md:text-5xl lg:text-[52px] font-bold block leading-tight">A Good Night's Sleep?</span>
           </h2>
           <button 
             className="mt-6 md:mt-8 mb-6 md:mb-8 bg-[#FBDC00] w-[240px] h-[54px] rounded-[15px] text-xl font-semibold text-[#1a1a1a] hover:bg-[#FBDC00]/90 transition-colors"
