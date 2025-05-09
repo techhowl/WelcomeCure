@@ -9,35 +9,55 @@ import { ChevronDown } from "lucide-react";
 
 const faqItems = [
   {
-    question: "How will homeopathy help me with my sleep disorder?",
+    question: "Is Homeopathy a proven science?",
     answer:
-      "Homeopathy offers a natural and holistic approach to treating sleep disorders by addressing the root cause rather than just the symptoms. The treatment is personalized based on your specific condition and overall health profile.",
+      "It definitely is. Homeopathy is a science based on sound logic and vast experimental data. It is the only medical science where data has been collected by proving on healthy human beings and not on animals because human beings can communicate their actual feelings during the testing while animals cannot. The principles of Homeopathy have been derived and authenticated by vast clinical experiments and data. The homeopathic pharmacopoeia lists more than 3000 remedies, whose clinical efficiency has been proved in various clinical trials conducted all over the world.",
   },
   {
-    question: "How do I know if I have a sleep disorder or not?",
+    question: "Are homeopathic medicines just sugar pills?",
     answer:
-      "Common signs include difficulty falling asleep, frequent waking during the night, daytime fatigue, and loud snoring. Our experts can help evaluate your symptoms and provide a proper diagnosis.",
+      "No. The pills of Homeopathic medicines are made from sugar but they work only as vehicles. Actual liquid medicine prepared from various natural medicinal substances is poured over the pills and dispensed as medications. Homeopathic medicines are also available in liquid form or tinctures, which can be administered directly or by diluting them in water whenever required.",
   },
   {
-    question: "How long is the homeopathic course?",
+    question: "Are there any side effects of homeopathic medicines?",
     answer:
-      "The duration of treatment varies depending on the severity and nature of your sleep disorder. Our doctors will provide a detailed treatment timeline after your initial consultation.",
+      "No, there are no side effects of homeopathic medicines. Sometimes you may get a cold, skin rash or little discharge after taking homeopathic medicines. This means that the system is getting cleared. In the same way, your old symptoms like constipation, warts or any skin rash may reappear. Do not take any medicine to treat these reappearing old symptoms, as these old symptoms will go away in a short while and you will be healed for a long-lasting period of time.",
   },
   {
     question:
-      "Are the homeopathic doctors at Welcome Cure qualified/certified?",
+      "What are the different modes of online communication between the patient and the physician on WelcomeCure?",
     answer:
-      "Yes, all our doctors are highly qualified and certified homeopathic practitioners with years of experience in treating sleep disorders and other chronic conditions.",
+      "To make communication simple and time-saving, we have created a Profile Dashboard for every patient who registers with us. Through this dashboard, patients can submit queries or send their case history. Apart from this, patients can also request the portal admin to arrange for a meeting with their Doctor through Chat or Skype.",
   },
   {
-    question: "Will I face any side effects during my course?",
+    question: "What are the advantages of online homeopathic treatment over physically visiting a doctor?",
     answer:
-      "Homeopathic treatments are generally safe with minimal to no side effects. Our medicines are natural and work gently with your body's healing mechanisms.",
+      "You can save your valuable time with online health consultation.You no longer need to take time out of your busy schedule and wait for your doctor’s appointment, long queues in the clinic, and waste time on travelling to reach your doctor.",
   },
   {
-    question: "Why should I choose Welcome Cure?",
+    question: "What is the minimum age for patient registration?",
     answer:
-      "We offer expert-backed, personalized treatment plans, experienced doctors, and a proven track record of helping patients overcome sleep disorders naturally.",
+      "There is no minimum age requirement to register for WelcomeCure. But, if the patient is a child, a differently abled person, or someone who is not internet-savvy, then a parent or guardian can register on their behalf.",
+  },
+  {
+    question: "Can I register on behalf of my child or elderly parents/relatives?",
+    answer:
+      "Yes, you can register on behalf of your child or elderly parents/relatives. Make sure all the data you provide in the patient profile and other medical records is accurate.",
+  },
+  {
+    question: "Can I choose my own physician or the system will assign one to me on registration?",
+    answer:
+      "You have the benefit of choosing your own Expert. If you are not sure or feel confused, the portal will recommend an Expert to you based on your disease condition.",
+  },
+  {
+    question: "How will the medicine/s be dispensed to me?",
+    answer:
+      "After your Expert physician forwards your prescription, our Delivery department will take charge of dispensing and sending the medicine to you. Our Delivery Department has people who are well-trained and skilled in the task of dispensing medicines. We follow the utmost precautions while doing so and all our medicines are of superlative quality.",
+  },
+  {
+    question: "How will you help me if the treatment does not work?",
+    answer:
+      "Your Expert will review your case again, and we will dispatch fresh medicines free of cost. If necessary, we will forward your case history for a Panel Consult.",
   },
 ];
 

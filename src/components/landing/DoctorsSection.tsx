@@ -89,7 +89,7 @@ export const DoctorsSection: React.FC = () => {
   const visibleDoctors = doctorsData.slice(startIndex, startIndex + doctorsPerPage);
 
   return (
-    <section className="w-full mx-auto px-4 sm:px-6 my-16 relative" id="doctors-section">
+    <section className="w-10/12 md:w-full mx-auto px-4 sm:px-6 my-16 relative" id="doctors-section">
       <h2 className="text-[rgba(26,26,26,1)] text-3xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-center mb-12 max-md:mb-8">
         Our Experienced Team of Doctors
       </h2>
@@ -122,7 +122,7 @@ export const DoctorsSection: React.FC = () => {
             {Array.from({ length: totalPages }).map((_, pageIndex) => (
               <div 
                 key={pageIndex} 
-                className="min-w-full grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6"
+                className="min-w-full grid row-start-auto md:grid-cols-2 gap-5 md:gap-6"
               >
                 {doctorsData
                   .slice(pageIndex * doctorsPerPage, pageIndex * doctorsPerPage + doctorsPerPage)
