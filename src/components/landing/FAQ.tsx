@@ -82,7 +82,7 @@ export const FAQ = () => {
   };
 
   return (
-    <section className="w-full py-6">
+    <section className="w-full mb-10 py-6">
       <div className="max-w-[900px]  mx-auto px-5">
         <h2 className="text-[#1a1a1a] text-5xl font-bold text-center mb-16 max-md:text-4xl max-md:mb-10">
           Frequently Asked Questions
