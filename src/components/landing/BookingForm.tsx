@@ -14,6 +14,7 @@ const GOOGLE_SCRIPT_URL = import.meta.env.VITE_GOOGLE_SCRIPT_URL || 'https://scr
 // EmailJS credentials
 const EMAILJS_SERVICE_ID = 'service_iot67w3';
 const EMAILJS_TEMPLATE_ID = 'template_1uaob81';
+const EMAILJS_USER_TEMPLATE_ID = 'template_x8g4j6b'; // Updated template ID for user confirmation
 const EMAILJS_PUBLIC_KEY = 'LYPZPgE_KJW9Fka5-';
 
 // Major Indian cities list
@@ -132,18 +133,66 @@ const submitToGoogleSheets = async (formData: BookingFormData) => {
   }
 };
 
-// Function to send email using EmailJS
-const sendEmail = async (formData: BookingFormData) => {
+// Function to send confirmation email to the user who submitted the form
+const sendConfirmationEmail = async (formData: BookingFormData) => {
   try {
-    console.log('Sending email with EmailJS...');
+    const userEmail = formData.email.trim();
+    console.log('Attempting to send confirmation email to user email:', userEmail);
+    
+    if (!userEmail || !userEmail.includes('@')) {
+      console.error('Invalid email address provided:', userEmail);
+      throw new Error('Invalid email address');
+    }
     
     // Format doctor preference for readability
     const formattedDoctorPreference = formData.doctorPreference.replace(/-/g, ' ')
       .replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase());
     
-    // Prepare template parameters - match with email template variables
+    // Prepare template parameters for user confirmation email
+    const emailParams = {
+      to_name: formData.fullName,
+      to_email: userEmail, // Explicitly set user's email
+      doctor_preference: formattedDoctorPreference,
+      user_city: formData.city,
+      problem_description: formData.problem,
+      reply_to: "info@welcomecure.com" // WelcomeCure support email
+    };
+    
+    console.log('Confirmation email parameters:', JSON.stringify(emailParams));
+    
+    // Initialize EmailJS again just to be sure
+    emailjs.init(EMAILJS_PUBLIC_KEY);
+    
+    // Send email directly with all parameters explicitly specified
+    const response = await emailjs.send(
+      EMAILJS_SERVICE_ID,
+      EMAILJS_USER_TEMPLATE_ID,
+      emailParams,
+      EMAILJS_PUBLIC_KEY
+    );
+    
+    console.log('EmailJS Response:', response);
+    console.log('Confirmation email sent successfully to:', userEmail);
+    return { success: true };
+  } catch (error) {
+    console.error('Detailed error sending confirmation email:', error);
+    // Continue execution even if email fails
+    return { success: false, error };
+  }
+};
+
+// Function to send notification email to admin
+const sendAdminNotification = async (formData: BookingFormData) => {
+  try {
+    console.log('Sending notification email to admin');
+    
+    // Format doctor preference for readability
+    const formattedDoctorPreference = formData.doctorPreference.replace(/-/g, ' ')
+      .replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase());
+    
+    // Prepare template parameters for admin notification
     const templateParams = {
-      to_email: 'sameer@howl.in',
+      to_email: 'sameer@howl.in', // Admin email
       full_name: formData.fullName,
       age: formData.age,
       email: formData.email,
@@ -154,18 +203,20 @@ const sendEmail = async (formData: BookingFormData) => {
       reply_to: formData.email
     };
     
-    // Send email
+    // Send email notification to admin
     const response = await emailjs.send(
       EMAILJS_SERVICE_ID,
       EMAILJS_TEMPLATE_ID,
-      templateParams
+      templateParams,
+      EMAILJS_PUBLIC_KEY
     );
     
-    console.log('Email sent successfully:', response.status, response.text);
+    console.log('Admin notification email sent successfully');
     return { success: true };
   } catch (error) {
-    console.error('Error sending email with EmailJS:', error);
-    throw error;
+    console.error('Error sending admin notification email:', error);
+    // Continue execution even if email fails
+    return { success: false, error };
   }
 };
 
@@ -185,7 +236,26 @@ export const BookingForm = () => {
 
   // Initialize EmailJS
   useEffect(() => {
-    emailjs.init(EMAILJS_PUBLIC_KEY);
+    try {
+      console.log('Initializing EmailJS with public key:', EMAILJS_PUBLIC_KEY);
+      emailjs.init(EMAILJS_PUBLIC_KEY);
+      
+      // Test EmailJS configuration
+      const testConfig = async () => {
+        try {
+          console.log('Testing EmailJS configuration...');
+          console.log('Service ID:', EMAILJS_SERVICE_ID);
+          console.log('Admin Template ID:', EMAILJS_TEMPLATE_ID);
+          console.log('User Template ID:', EMAILJS_USER_TEMPLATE_ID);
+        } catch (error) {
+          console.error('Error testing EmailJS configuration:', error);
+        }
+      };
+      
+      testConfig();
+    } catch (error) {
+      console.error('Failed to initialize EmailJS:', error);
+    }
   }, []);
 
   // Close city dropdown when clicking outside
@@ -222,6 +292,13 @@ export const BookingForm = () => {
       setSubmitError(null);
       setSubmitSuccess(null);
       
+      // Validate email format
+      if (!data.email || !data.email.includes('@')) {
+        setSubmitError('Please enter a valid email address');
+        setIsSubmitting(false);
+        return;
+      }
+      
       // Format doctor preference to make it readable (if it's in kebab-case)
       const formattedData = {
         ...data,
@@ -229,20 +306,52 @@ export const BookingForm = () => {
           .replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase())
       };
       
-      // Send data to Google Sheets directly
-      await submitToGoogleSheets(formattedData);
+      console.log('Form submission - user email:', data.email);
       
-      // Send email notification
+      // Send data to Google Sheets directly
       try {
-        await sendEmail(data);
-        console.log('Email notification sent successfully');
+        await submitToGoogleSheets(formattedData);
+        console.log('Data successfully submitted to Google Sheets');
+      } catch (sheetError) {
+        console.error('Google Sheets submission error:', sheetError);
+        // Continue with email sending even if sheets submission fails
+      }
+      
+      // Send confirmation email to the user
+      let userEmailSent = false;
+      try {
+        const emailResult = await sendConfirmationEmail(data);
+        userEmailSent = emailResult.success;
+        if (userEmailSent) {
+          console.log('Confirmation email successfully sent to user');
+        } else {
+          console.error('Failed to send confirmation email to user');
+        }
       } catch (emailError) {
-        console.error('Failed to send email, but form data was saved:', emailError);
-        // Continue with success flow even if email fails - data is already saved to sheets
+        console.error('Exception sending confirmation email:', emailError);
+      }
+      
+      // Send notification to admin
+      let adminEmailSent = false;
+      try {
+        const adminResult = await sendAdminNotification(data);
+        adminEmailSent = adminResult.success;
+        if (adminEmailSent) {
+          console.log('Admin notification email sent successfully');
+        } else {
+          console.error('Failed to send admin notification');
+        }
+      } catch (emailError) {
+        console.error('Exception sending admin notification:', emailError);
       }
       
       // Show success message and reset form
-      setSubmitSuccess('Appointment booked successfully! We will contact you shortly.');
+      if (userEmailSent) {
+        setSubmitSuccess(`Thank you for booking an appointment! A confirmation has been sent to ${data.email}.`);
+      } else {
+        setSubmitSuccess('Appointment booked successfully! We will contact you shortly.');
+      }
+      
       form.reset();
       setCitySearchTerm('');
       
