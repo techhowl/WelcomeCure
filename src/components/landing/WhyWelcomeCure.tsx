@@ -3,35 +3,35 @@ import React, { useState, useEffect } from "react";
 const features = [
   {
     icon: "/assets/ExpertlyCrafted.svg",
-    title: "Expertly Crafted Treatment Plans",
+    title: "Expertly Crafted\nTreatment Plans",
   },
   {
     icon: "/assets/PersonalizedDiet.svg",
-    title: "Personalized Diet and Lifestyle Advisory",
+    title: "Personalized Diet and\nLifestyle Advisory",
   },
   {
     icon: "/assets/InternationalClassMedicines.svg",
-    title: "International Class Medicines",
+    title: "International Class\nMedicines",
   },
   {
     icon: "/assets/ExpertPanel.svg",
-    title: "Expert Panel of Qualified Doctors",
+    title: "Expert Panel of\nQualified Doctors",
   },
   {
     icon: "/assets/onlidoc.svg",
-    title: "Online Doctor Consultation",
+    title: "Online Doctor\nConsultation",
   },
   {
     icon: "/assets/wordlarg.svg",
-    title: "World’s Largest Database of Cured Patients",
+    title: "World's Largest Database\nof Cured Patients",
   },
   {
     icon: "/assets/SafeInsurance.svg",
-    title: "A Secure Vault For Your Information",
+    title: "A Secure Vault For\nYour Information",
   },
   {
     icon: "/assets/adherence.svg",
-    title: "Adherence To Global Standards",
+    title: "Adherence To\nGlobal Standards",
   },
 ];
 
@@ -108,13 +108,13 @@ export const WhyWelcomeCure = () => {
                     {feature.icon && (
                       <img
                         src={feature.icon}
-                        alt={feature.title.split(" ")[0]}
+                        alt={feature.title.split("\n")[0]}
                         className="w-16 sm:w-20 md:w-24 h-16 sm:h-20 md:h-24 object-contain"
                       />
                     )}
                   </div>
                   <div className="text-sm sm:text-base md:text-lg lg:text-xl text-[#1A1A1A] font-medium text-center leading-tight mt-3 sm:mt-4 md:mt-6 max-w-full whitespace-pre-line">
-                    {feature.title.replace(" and ", "\nand ").replace("Treatment Plans", "Treatment\nPlans").replace("Qualified Doctors", "Qualified\nDoctors").replace("Class Medicines", "Class\nMedicines")}
+                    {feature.title}
                   </div>
                 </div>
               </div>
