@@ -16,12 +16,26 @@ const EMAILJS_SERVICE_ID = 'service_iot67w3';
 const EMAILJS_TEMPLATE_ID = 'template_1uaob81';
 const EMAILJS_PUBLIC_KEY = 'LYPZPgE_KJW9Fka5-';
 
+// Major Indian cities list
+const indianCities = [
+  "Mumbai", "Delhi", "Bangalore", "Hyderabad", "Chennai", "Kolkata", 
+  "Ahmedabad", "Pune", "Jaipur", "Lucknow", "Kanpur", "Nagpur", 
+  "Indore", "Thane", "Bhopal", "Visakhapatnam", "Patna", "Vadodara", 
+  "Ghaziabad", "Ludhiana", "Agra", "Nashik", "Faridabad", "Meerut", 
+  "Rajkot", "Varanasi", "Srinagar", "Aurangabad", "Dhanbad", "Amritsar", 
+  "Navi Mumbai", "Allahabad", "Ranchi", "Howrah", "Coimbatore", "Jabalpur", 
+  "Gwalior", "Vijayawada", "Jodhpur", "Madurai", "Raipur", "Kota", 
+  "Chandigarh", "Guwahati", "Solapur", "Hubli", "Dharwad", "Mysore", 
+  "Tiruchirappalli", "Bareilly", "Aligarh", "Moradabad", "Gorakhpur"
+];
+
 interface BookingFormData {
   fullName: string;
   age: string;
   email: string;
   phone: string;
   doctorPreference: string;
+  city: string;
   problem: string;
 }
 
@@ -95,6 +109,7 @@ const submitToGoogleSheets = async (formData: BookingFormData) => {
       params.append('email', formData.email);
       params.append('phone', formData.phone);
       params.append('doctorPreference', formData.doctorPreference || '');
+      params.append('city', formData.city || '');
       params.append('problem', formData.problem || '');
       
       // Create image for tracking submission (invisible)
@@ -134,6 +149,7 @@ const sendEmail = async (formData: BookingFormData) => {
       email: formData.email,
       phone: formData.phone,
       doctor: formattedDoctorPreference,
+      city: formData.city,
       symptoms: formData.problem,
       reply_to: formData.email
     };
@@ -159,10 +175,30 @@ export const BookingForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitSuccess, setSubmitSuccess] = useState<string | null>(null);
+  const [citySearchTerm, setCitySearchTerm] = useState('');
+  const [showCityDropdown, setShowCityDropdown] = useState(false);
+
+  // Filter cities based on search term
+  const filteredCities = indianCities.filter(city => 
+    city.toLowerCase().includes(citySearchTerm.toLowerCase())
+  ).slice(0, 5); // Show only first 5 matches
 
   // Initialize EmailJS
   useEffect(() => {
     emailjs.init(EMAILJS_PUBLIC_KEY);
+  }, []);
+
+  // Close city dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (!target.closest('.city-dropdown-container')) {
+        setShowCityDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   const form = useForm<BookingFormData>({
@@ -172,6 +208,7 @@ export const BookingForm = () => {
       email: "",
       phone: "",
       doctorPreference: "",
+      city: "",
       problem: "",
     }
   });
@@ -207,6 +244,7 @@ export const BookingForm = () => {
       // Show success message and reset form
       setSubmitSuccess('Appointment booked successfully! We will contact you shortly.');
       form.reset();
+      setCitySearchTerm('');
       
     } catch (error) {
       console.error('Error submitting form:', error);
@@ -236,6 +274,12 @@ export const BookingForm = () => {
     } finally {
       setIsRefining(false);
     }
+  };
+
+  const handleCitySelect = (city: string) => {
+    form.setValue("city", city);
+    setCitySearchTerm(city);
+    setShowCityDropdown(false);
   };
 
   return (
@@ -295,30 +339,64 @@ export const BookingForm = () => {
                   />
                 </div>
                 
-                <div className="relative">
-                  <Input 
-                    placeholder="Doctor Preference"
-                    readOnly
-                    className="bg-white h-12 md:h-14 rounded-xl text-base w-full pr-10"
-                    value={form.watch("doctorPreference") ? 
-                      form.watch("doctorPreference").replace(/-/g, ' ').replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase()) 
-                      : ""}
-                  />
-                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                    <div className="w-5 h-5 md:w-6 md:h-6 bg-[#FBDC00] rounded-full flex items-center justify-center">
-                      <ChevronDown className="h-3 w-3 md:h-4 md:w-4 text-black" />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
+                  {/* Doctor Preference */}
+                  <div className="relative">
+                    <Input 
+                      placeholder="Doctor Preference"
+                      readOnly
+                      className="bg-white h-12 md:h-14 rounded-xl text-base w-full pr-10"
+                      value={form.watch("doctorPreference") ? 
+                        form.watch("doctorPreference").replace(/-/g, ' ').replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase()) 
+                        : ""}
+                    />
+                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                      <div className="w-5 h-5 md:w-6 md:h-6 bg-[#FBDC00] rounded-full flex items-center justify-center">
+                        <ChevronDown className="h-3 w-3 md:h-4 md:w-4 text-black" />
+                      </div>
                     </div>
+                    <select 
+                      className="absolute inset-0 opacity-0 cursor-pointer"
+                      onChange={(e) => form.setValue("doctorPreference", e.target.value)}
+                    >
+                      <option value="" disabled selected>Doctor Preference</option>
+                      <option value="first-time-consultation">First Time Consultation</option>
+                      <option value="dr-jawahar-shah">Dr. Jawahar Shah</option>
+                      <option value="dr-rita-maity">Dr. Rita Maity</option>
+                      <option value="dr-bhavna-ahuja">Dr. Bhavna Ahuja</option>
+                      <option value="dr-nida-qazi">Dr. Nida Qazi</option>
+                    </select>
                   </div>
-                  <select 
-                    className="absolute inset-0 opacity-0 cursor-pointer"
-                    onChange={(e) => form.setValue("doctorPreference", e.target.value)}
-                  >
-                    <option value="" disabled selected>Doctor Preference</option>
-                    <option value="dr-jawahar-shah">Dr. Jawahar Shah</option>
-                    <option value="dr-rita-maity">Dr. Rita Maity</option>
-                    <option value="dr-bhavna-ahuja">Dr. Bhavna Ahuja</option>
-                    <option value="dr-nida-qazi">Dr. Nida Qazi</option>
-                  </select>
+                  
+                  {/* City Input with autocomplete */}
+                  <div className="relative city-dropdown-container">
+                    <Input 
+                      placeholder="Your City"
+                      className="bg-white h-12 md:h-14 rounded-xl text-base w-full"
+                      value={citySearchTerm}
+                      onChange={(e) => {
+                        setCitySearchTerm(e.target.value);
+                        form.setValue("city", e.target.value);
+                        setShowCityDropdown(true);
+                      }}
+                      onFocus={() => setShowCityDropdown(true)}
+                    />
+                    
+                    {/* City dropdown */}
+                    {showCityDropdown && citySearchTerm && filteredCities.length > 0 && (
+                      <div className="absolute z-10 mt-1 w-full bg-white rounded-xl shadow-lg max-h-60 overflow-auto">
+                        {filteredCities.map((city, index) => (
+                          <div 
+                            key={index}
+                            className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                            onClick={() => handleCitySelect(city)}
+                          >
+                            {city}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
                 
                 <div className="relative">
