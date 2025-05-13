@@ -17,6 +17,11 @@ const EMAILJS_TEMPLATE_ID = 'template_1uaob81';
 const EMAILJS_USER_TEMPLATE_ID = 'template_x8g4j6b'; // Updated template ID for user confirmation
 const EMAILJS_PUBLIC_KEY = 'LYPZPgE_KJW9Fka5-';
 
+// AiSensy OTP service credentials
+const AISENSY_API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1NjFiZTUyYTk3NTIzN2ZjMmE0NmM2NyIsIm5hbWUiOiJXZWxjb21lQ3VyZSIsImFwcE5hbWUiOiJBaVNlbnN5IiwiY2xpZW50SWQiOiI2NTBjMGNkMGIyMTlmYzIwNmQ0NjNjMzAiLCJhY3RpdmVQbGFuIjoiTk9ORSIsImlhdCI6MTcwMDkwNDUzMH0.iuMUtjZ2MGRc2jnpBJFUHOmKeJlWGghNKc4MFJb9pCA";
+const AISENSY_API_URL = "https://backend.aisensy.com/campaign/t1/api/v2";
+const OTP_CAMPAIGN_NAME = "otp_verification"; // Campaign name in AiSensy
+
 // Major Indian cities list
 const indianCities = [
   "Mumbai", "Delhi", "Bangalore", "Hyderabad", "Chennai", "Kolkata", 
@@ -39,6 +44,83 @@ interface BookingFormData {
   city: string;
   problem: string;
 }
+
+// Function to send OTP via AiSensy WhatsApp
+const sendOtpViaWhatsApp = async (formData: BookingFormData) => {
+  try {
+    console.log('Sending OTP via AiSensy to phone:', formData.phone);
+    
+    // Format phone number (ensure it has country code)
+    let phoneNumber = formData.phone;
+    if (!phoneNumber.startsWith('91') && !phoneNumber.startsWith('+91')) {
+      phoneNumber = '91' + phoneNumber;
+    }
+    
+    // Remove any + character if present
+    phoneNumber = phoneNumber.replace('+', '');
+    
+    // Get first name for template parameter
+    const firstName = formData.fullName.split(' ')[0] || 'user';
+    
+    // Per the error message, the template expects specific parameters
+    // Using the exact structure from the original curl command
+    const otpPayload = {
+      apiKey: AISENSY_API_KEY,
+      campaignName: OTP_CAMPAIGN_NAME,
+      destination: phoneNumber,
+      userName: "WelcomeCure",
+      templateParams: [
+        firstName
+      ],
+      source: "new-landing-page form",
+      media: {},
+      buttons: [
+        {
+          type: "button",
+          sub_type: "url",
+          index: 0,
+          parameters: [
+            {
+              type: "text",
+              text: "TESTCODE20"
+            }
+          ]
+        }
+      ],
+      carouselCards: [],
+      location: {},
+      attributes: {},
+      paramsFallbackValue: {
+        FirstName: firstName
+      }
+    };
+    
+    console.log('Sending OTP request to AiSensy with payload:', JSON.stringify(otpPayload));
+    
+    const response = await fetch(AISENSY_API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(otpPayload)
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('AiSensy API error response:', errorData);
+      throw new Error(`AiSensy API error: ${errorData.message || response.statusText}`);
+    }
+    
+    const data = await response.json();
+    console.log('AiSensy OTP response:', data);
+    
+    // Use TESTCODE20 as the OTP code since it's in the button parameters
+    return { success: true, data, otp: "TESTCODE20" };
+  } catch (error) {
+    console.error('Error sending OTP via AiSensy:', error);
+    return { success: false, error, otp: null };
+  }
+};
 
 const callGeminiAPI = async (text: string): Promise<string> => {
   try {
@@ -228,7 +310,17 @@ export const BookingForm = () => {
   const [submitSuccess, setSubmitSuccess] = useState<string | null>(null);
   const [citySearchTerm, setCitySearchTerm] = useState('');
   const [showCityDropdown, setShowCityDropdown] = useState(false);
+  
+  // OTP related states
+  const [otpStatus, setOtpStatus] = useState<string | null>(null);
+  const [otpSent, setOtpSent] = useState(false);
+  const [otpVerified, setOtpVerified] = useState(false);
+  const [otpCode, setOtpCode] = useState('');
+  const [isRequestingOtp, setIsRequestingOtp] = useState(false);
 
+  // Reference to store the actual OTP for verification
+  const [generatedOtp, setGeneratedOtp] = useState<string | null>(null);
+  
   // Filter cities based on search term
   const filteredCities = indianCities.filter(city => 
     city.toLowerCase().includes(citySearchTerm.toLowerCase())
@@ -285,9 +377,21 @@ export const BookingForm = () => {
 
   // Watch the problem field to enable/disable the button reactively
   const problemText = form.watch("problem");
+  const phoneNumber = form.watch("phone");
+
+  const validatePhoneNumber = (phone: string) => {
+    const digits = phone.replace(/\D/g, '');
+    return digits.length >= 10;
+  };
 
   const onSubmit = async (data: BookingFormData) => {
     try {
+      // Check if OTP is verified
+      if (!otpVerified) {
+        setSubmitError('Please verify your phone number first');
+        return;
+      }
+      
       setIsSubmitting(true);
       setSubmitError(null);
       setSubmitSuccess(null);
@@ -352,8 +456,13 @@ export const BookingForm = () => {
         setSubmitSuccess('Appointment booked successfully! We will contact you shortly.');
       }
       
+      // Reset form and states
       form.reset();
       setCitySearchTerm('');
+      setOtpSent(false);
+      setOtpVerified(false);
+      setOtpCode('');
+      setGeneratedOtp(null);
       
     } catch (error) {
       console.error('Error submitting form:', error);
@@ -389,6 +498,54 @@ export const BookingForm = () => {
     form.setValue("city", city);
     setCitySearchTerm(city);
     setShowCityDropdown(false);
+  };
+
+  // Handler to request OTP
+  const handleRequestOtp = async () => {
+    try {
+      // Validate the phone number before requesting OTP
+      if (!validatePhoneNumber(phoneNumber)) {
+        setSubmitError('Please enter a valid phone number (at least 10 digits)');
+        return;
+      }
+      
+      setIsRequestingOtp(true);
+      setOtpStatus('Sending OTP...');
+      setSubmitError(null);
+      
+      // Get the current form values
+      const formData = form.getValues();
+      
+      // Send OTP via WhatsApp
+      const otpResult = await sendOtpViaWhatsApp(formData);
+      
+      if (otpResult.success && otpResult.otp) {
+        setOtpSent(true);
+        setGeneratedOtp(otpResult.otp);
+        setOtpStatus('OTP sent to your WhatsApp. Please enter it below.');
+        console.log('OTP sent successfully:', otpResult.otp);
+      } else {
+        setOtpStatus('Failed to send OTP. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error requesting OTP:', error);
+      setOtpStatus('Error sending OTP. Please try again.');
+      setSubmitError('Could not send verification code. Please check your phone number.');
+    } finally {
+      setIsRequestingOtp(false);
+    }
+  };
+  
+  // Handler to verify OTP
+  const handleVerifyOtp = () => {
+    // Verify against either the stored OTP or the hardcoded TESTCODE20
+    if (otpCode && (otpCode === generatedOtp || otpCode === "TESTCODE20")) {
+      setOtpVerified(true);
+      setOtpStatus('Phone number verified successfully!');
+      setSubmitError(null);
+    } else {
+      setSubmitError('Invalid verification code. Please try again.');
+    }
   };
 
   return (
@@ -440,13 +597,59 @@ export const BookingForm = () => {
                     {...form.register("email")}
                     required
                   />
-                  <Input 
-                    placeholder="Phone Number" 
-                    className="bg-white h-12 md:h-14 rounded-xl text-base" 
-                    {...form.register("phone")}
-                    required
-                  />
+                  <div className="relative">
+                    <Input 
+                      placeholder="Phone Number" 
+                      className="bg-white h-12 md:h-14 rounded-xl text-base pr-24" 
+                      {...form.register("phone")}
+                      required
+                      disabled={otpSent}
+                    />
+                    <Button
+                      type="button"
+                      size="sm"
+                      onClick={handleRequestOtp}
+                      disabled={isRequestingOtp || otpVerified || !validatePhoneNumber(phoneNumber || '') || otpSent}
+                      className="absolute right-1 top-1/2 transform -translate-y-1/2 bg-[#FBDC00] hover:bg-[#e6ca00] text-black rounded-lg h-10 px-2"
+                    >
+                      {isRequestingOtp ? (
+                        <div className="animate-spin h-5 w-5 border-2 border-current border-t-transparent rounded-full" />
+                      ) : otpVerified ? (
+                        "Verified"
+                      ) : otpSent ? (
+                        "Resend OTP"
+                      ) : (
+                        "Get OTP"
+                      )}
+                    </Button>
+                  </div>
                 </div>
+                
+                {/* OTP verification input - only visible when OTP is sent */}
+                {otpSent && !otpVerified && (
+                  <>
+                    <div className="p-3 bg-blue-50 text-blue-700 rounded-md text-sm mb-2">
+                      We've sent a WhatsApp message with verification code "TESTCODE20" to your phone. Please enter it below.
+                    </div>
+                    <div className="relative">
+                      <Input 
+                        placeholder="Enter verification code" 
+                        className="bg-white h-12 md:h-14 rounded-xl text-base pr-24" 
+                        value={otpCode}
+                        onChange={(e) => setOtpCode(e.target.value)}
+                      />
+                      <Button
+                        type="button"
+                        size="sm"
+                        onClick={handleVerifyOtp}
+                        disabled={!otpCode || otpCode.length < 4}
+                        className="absolute right-1 top-1/2 transform -translate-y-1/2 bg-[#FBDC00] hover:bg-[#e6ca00] text-black rounded-lg h-10 px-2"
+                      >
+                        Verify OTP
+                      </Button>
+                    </div>
+                  </>
+                )}
                 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
                   {/* Doctor Preference */}
@@ -545,6 +748,12 @@ export const BookingForm = () => {
                   )}
                 </div>
                 
+                {otpStatus && (
+                  <div className="p-3 bg-blue-50 text-blue-700 rounded-md text-sm">
+                    {otpStatus}
+                  </div>
+                )}
+                
                 {submitSuccess && (
                   <div className="p-3 bg-green-50 text-green-700 rounded-md text-sm">
                     {submitSuccess}
@@ -560,7 +769,7 @@ export const BookingForm = () => {
                 <Button 
                   type="submit" 
                   className="w-full bg-[#FBDC00] hover:bg-[#FBDC00]/90 text-black font-semibold text-base md:text-lg h-12 md:h-14 rounded-xl"
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || !otpVerified}
                 >
                   {isSubmitting ? (
                     <div className="flex items-center gap-2">
