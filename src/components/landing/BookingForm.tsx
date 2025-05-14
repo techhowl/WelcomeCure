@@ -9,7 +9,7 @@ import emailjs from '@emailjs/browser';
 
 // Access environment variables
 const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY || "AIzaSyCJk0564e6SKLC8D0NT2chWdxfWJu6E-JE";
-const GOOGLE_SCRIPT_URL = import.meta.env.VITE_GOOGLE_SCRIPT_URL || 'https://script.google.com/macros/s/AKfycbxqWCF0PSEFgqpztYrKOMYPoNMiNEbARThv9dbbQIzqhUD1Dz_hFQ6OlcaXJ1CSuTsMOQ/exec';
+const GOOGLE_SCRIPT_URL = import.meta.env.VITE_GOOGLE_SCRIPT_URL || 'https://script.google.com/macros/s/AKfycbz46n96c3QAdQXAjhVy5kIYfNS0LeFo8cuYSTdZuXjqChwrtBTKUCPO-3i0HKptvNOcoQ/exec';
 
 // EmailJS credentials
 const EMAILJS_SERVICE_ID = 'service_iot67w3';
@@ -45,10 +45,18 @@ interface BookingFormData {
   problem: string;
 }
 
+// Function to generate random OTP
+const generateOTP = () => {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+};
+
 // Function to send OTP via AiSensy WhatsApp
 const sendOtpViaWhatsApp = async (formData: BookingFormData) => {
   try {
     console.log('Sending OTP via AiSensy to phone:', formData.phone);
+    
+    // Generate a unique 6-digit OTP
+    const uniqueOTP = generateOTP();
     
     // Format phone number (ensure it has country code)
     let phoneNumber = formData.phone;
@@ -62,8 +70,7 @@ const sendOtpViaWhatsApp = async (formData: BookingFormData) => {
     // Get first name for template parameter
     const firstName = formData.fullName.split(' ')[0] || 'user';
     
-    // Per the error message, the template expects specific parameters
-    // Using the exact structure from the original curl command
+    // Keep the original structure but use the unique OTP
     const otpPayload = {
       apiKey: AISENSY_API_KEY,
       campaignName: OTP_CAMPAIGN_NAME,
@@ -82,7 +89,7 @@ const sendOtpViaWhatsApp = async (formData: BookingFormData) => {
           parameters: [
             {
               type: "text",
-              text: "TESTCODE20"
+              text: uniqueOTP
             }
           ]
         }
@@ -114,8 +121,7 @@ const sendOtpViaWhatsApp = async (formData: BookingFormData) => {
     const data = await response.json();
     console.log('AiSensy OTP response:', data);
     
-    // Use TESTCODE20 as the OTP code since it's in the button parameters
-    return { success: true, data, otp: "TESTCODE20" };
+    return { success: true, data, otp: uniqueOTP };
   } catch (error) {
     console.error('Error sending OTP via AiSensy:', error);
     return { success: false, error, otp: null };
@@ -169,6 +175,7 @@ const callGeminiAPI = async (text: string): Promise<string> => {
 const submitToGoogleSheets = async (formData: BookingFormData) => {
   try {
     console.log('Submitting form data:', formData);
+    console.log('City value being sent:', formData.city); // Add logging for city value
     
     // Method 1: Try fetch with no-cors first
     try {
@@ -192,7 +199,7 @@ const submitToGoogleSheets = async (formData: BookingFormData) => {
       params.append('email', formData.email);
       params.append('phone', formData.phone);
       params.append('doctorPreference', formData.doctorPreference || '');
-      params.append('city', formData.city || '');
+      params.append('city', formData.city || ''); // Ensure city is included
       params.append('problem', formData.problem || '');
       
       // Create image for tracking submission (invisible)
@@ -498,6 +505,7 @@ export const BookingForm = () => {
     form.setValue("city", city);
     setCitySearchTerm(city);
     setShowCityDropdown(false);
+    console.log("City selected:", city); // Log when a city is selected
   };
 
   // Handler to request OTP
@@ -538,8 +546,7 @@ export const BookingForm = () => {
   
   // Handler to verify OTP
   const handleVerifyOtp = () => {
-    // Verify against either the stored OTP or the hardcoded TESTCODE20
-    if (otpCode && (otpCode === generatedOtp || otpCode === "TESTCODE20")) {
+    if (otpCode && otpCode === generatedOtp) {
       setOtpVerified(true);
       setOtpStatus('Phone number verified successfully!');
       setSubmitError(null);
@@ -629,7 +636,7 @@ export const BookingForm = () => {
                 {otpSent && !otpVerified && (
                   <>
                     <div className="p-3 bg-blue-50 text-blue-700 rounded-md text-sm mb-2">
-                      We've sent a WhatsApp message with verification code "TESTCODE20" to your phone. Please enter it below.
+                      We've sent a WhatsApp message with a verification code to your phone. Please enter it below.
                     </div>
                     <div className="relative">
                       <Input 
@@ -642,7 +649,7 @@ export const BookingForm = () => {
                         type="button"
                         size="sm"
                         onClick={handleVerifyOtp}
-                        disabled={!otpCode || otpCode.length < 4}
+                        disabled={!otpCode || otpCode.length < 6}
                         className="absolute right-1 top-1/2 transform -translate-y-1/2 bg-[#FBDC00] hover:bg-[#e6ca00] text-black rounded-lg h-10 px-2"
                       >
                         Verify OTP
@@ -686,6 +693,7 @@ export const BookingForm = () => {
                       placeholder="Your City"
                       className="bg-white h-12 md:h-14 rounded-xl text-base w-full"
                       value={citySearchTerm}
+                      {...form.register("city")}
                       onChange={(e) => {
                         setCitySearchTerm(e.target.value);
                         form.setValue("city", e.target.value);
