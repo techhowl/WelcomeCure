@@ -324,6 +324,8 @@ export const BookingForm = () => {
   const [submitSuccess, setSubmitSuccess] = useState<string | null>(null);
   const [citySearchTerm, setCitySearchTerm] = useState('');
   const [showCityDropdown, setShowCityDropdown] = useState(false);
+  const [showDoctorDropdown, setShowDoctorDropdown] = useState(false);
+  const [formValidationErrors, setFormValidationErrors] = useState<Partial<Record<keyof BookingFormData, boolean>>>({});
   
   // OTP related states
   const [otpStatus, setOtpStatus] = useState<string | null>(null);
@@ -364,12 +366,15 @@ export const BookingForm = () => {
     }
   }, []);
 
-  // Close city dropdown when clicking outside
+  // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement;
       if (!target.closest('.city-dropdown-container')) {
         setShowCityDropdown(false);
+      }
+      if (!target.closest('.doctor-dropdown-container')) {
+        setShowDoctorDropdown(false);
       }
     };
 
@@ -392,10 +397,45 @@ export const BookingForm = () => {
   // Watch the problem field to enable/disable the button reactively
   const problemText = form.watch("problem");
   const phoneNumber = form.watch("phone");
+  const emailValue = form.watch("email");
+  const fullNameValue = form.watch("fullName");
+  const cityValue = form.watch("city");
+  
+  // Update form validation when input values change
+  useEffect(() => {
+    setFormValidationErrors(checkFormErrors());
+  }, [phoneNumber, emailValue, fullNameValue, cityValue]);
 
   const validatePhoneNumber = (phone: string) => {
     const digits = phone.replace(/\D/g, '');
     return digits.length >= 10;
+  };
+
+  const validateEmail = (email: string) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  };
+
+  const checkFormErrors = () => {
+    const values = form.getValues();
+    const errors: Partial<Record<keyof BookingFormData, boolean>> = {};
+    
+    if (!values.fullName || values.fullName.trim().length < 3) {
+      errors.fullName = true;
+    }
+    
+    if (values.email && !validateEmail(values.email)) {
+      errors.email = true;
+    }
+    
+    if (!validatePhoneNumber(values.phone)) {
+      errors.phone = true;
+    }
+    
+    if (!values.city || values.city.trim().length < 2) {
+      errors.city = true;
+    }
+    
+    return errors;
   };
 
   const onSubmit = async (data: BookingFormData) => {
@@ -406,16 +446,16 @@ export const BookingForm = () => {
         return;
       }
       
+      // Check for validation errors
+      const errors = checkFormErrors();
+      if (Object.keys(errors).length > 0) {
+        setSubmitError('Please fill in all required fields correctly');
+        return;
+      }
+      
       setIsSubmitting(true);
       setSubmitError(null);
       setSubmitSuccess(null);
-      
-      // Validate email format
-      if (!data.email || !data.email.includes('@')) {
-        setSubmitError('Please enter a valid email address');
-        setIsSubmitting(false);
-        return;
-      }
       
       // Format doctor preference to make it readable (if it's in kebab-case)
       const formattedData = {
@@ -515,6 +555,11 @@ export const BookingForm = () => {
     console.log("City selected:", city); // Log when a city is selected
   };
 
+  const handleDoctorSelect = (value: string) => {
+    form.setValue("doctorPreference", value);
+    setShowDoctorDropdown(false);
+  };
+
   // Handler to request OTP
   const handleRequestOtp = async () => {
     try {
@@ -525,7 +570,7 @@ export const BookingForm = () => {
       }
       
       setIsRequestingOtp(true);
-      setOtpStatus('Sending OTP...');
+      setOtpStatus('Sending OTP to your WhatsApp...');
       setSubmitError(null);
       
       // Get the current form values
@@ -537,7 +582,7 @@ export const BookingForm = () => {
       if (otpResult.success && otpResult.otp) {
         setOtpSent(true);
         setGeneratedOtp(otpResult.otp);
-        setOtpStatus('OTP sent to your WhatsApp. Please enter it below.');
+        setOtpStatus('OTP sent to your WhatsApp. Please enter the verification code below.');
         console.log('OTP sent successfully:', otpResult.otp);
       } else {
         setOtpStatus('Failed to send OTP. Please try again.');
@@ -557,6 +602,11 @@ export const BookingForm = () => {
       setOtpVerified(true);
       setOtpStatus('Phone number verified successfully!');
       setSubmitError(null);
+      
+      // Clear the OTP status message after 2 seconds
+      setTimeout(() => {
+        setOtpStatus(null);
+      }, 2000);
     } else {
       setSubmitError('Invalid verification code. Please try again.');
     }
@@ -592,13 +642,13 @@ export const BookingForm = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
                   <Input 
                     placeholder="Full Name" 
-                    className="bg-white h-12 md:h-14 rounded-xl text-base" 
+                    className={`bg-white h-12 md:h-14 rounded-xl text-base ${formValidationErrors.fullName ? 'border-white' : ''}`}
                     {...form.register("fullName")}
                     required
                   />
                   <Input 
                     placeholder="Age" 
-                    className="bg-white h-12 md:h-14 rounded-xl text-base" 
+                    className="bg-white h-12 md:h-14 rounded-xl text-base"
                     {...form.register("age")}
                   />
                 </div>
@@ -606,7 +656,7 @@ export const BookingForm = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
                   <Input 
                     placeholder="Email address" 
-                    className="bg-white h-12 md:h-14 rounded-xl text-base" 
+                    className={`bg-white h-12 md:h-14 rounded-xl text-base  ${formValidationErrors.email ? 'border-white' : ''}`}
                     type="email" 
                     {...form.register("email")}
                     required
@@ -614,7 +664,7 @@ export const BookingForm = () => {
                   <div className="relative">
                     <Input 
                       placeholder="Phone Number" 
-                      className="bg-white h-12 md:h-14 rounded-xl text-base pr-24" 
+                      className={`bg-white h-12 md:h-14 rounded-xl text-base pr-24 ${formValidationErrors.phone ? 'border-white' : ''}`}
                       {...form.register("phone")}
                       required
                       disabled={otpSent}
@@ -624,7 +674,7 @@ export const BookingForm = () => {
                       size="sm"
                       onClick={handleRequestOtp}
                       disabled={isRequestingOtp || otpVerified || !validatePhoneNumber(phoneNumber || '') || otpSent}
-                      className="absolute right-1 top-1/2 transform -translate-y-1/2 bg-[#FBDC00] hover:bg-[#e6ca00] text-black rounded-lg h-10 px-2"
+                      className="absolute right-1 top-1/2 transform -translate-y-1/2 bg-[#FBDC00] hover:bg-[#e6ca00] text-black rounded-lg h-10 px-2 focus:ring-0"
                     >
                       {isRequestingOtp ? (
                         <div className="animate-spin h-5 w-5 border-2 border-current border-t-transparent rounded-full" />
@@ -639,66 +689,86 @@ export const BookingForm = () => {
                   </div>
                 </div>
                 
-                {/* OTP verification input - only visible when OTP is sent */}
+                {/* OTP Status Message */}
+                {otpStatus && (
+                  <div className={`p-3 rounded-md text-sm ${otpVerified ? 'bg-[#FBDC00]/20 text-[#91830A]' : 'bg-[#1D9BD7]/10 text-[#1D9BD7]'}`}>
+                    {otpStatus}
+                  </div>
+                )}
+                
+                {/* OTP verification input - only visible when OTP is sent and not verified */}
                 {otpSent && !otpVerified && (
-                  <>
-                    <div className="p-3 bg-blue-50 text-blue-700 rounded-md text-sm mb-2">
-                      We've sent a WhatsApp message with a verification code to your phone. Please enter it below.
-                    </div>
-                    <div className="relative">
-                      <Input 
-                        placeholder="Enter verification code" 
-                        className="bg-white h-12 md:h-14 rounded-xl text-base pr-24" 
-                        value={otpCode}
-                        onChange={(e) => setOtpCode(e.target.value)}
-                      />
-                      <Button
-                        type="button"
-                        size="sm"
-                        onClick={handleVerifyOtp}
-                        disabled={!otpCode || otpCode.length < 6}
-                        className="absolute right-1 top-1/2 transform -translate-y-1/2 bg-[#FBDC00] hover:bg-[#e6ca00] text-black rounded-lg h-10 px-2"
-                      >
-                        Verify OTP
-                      </Button>
-                    </div>
-                  </>
+                  <div className="relative">
+                    <Input 
+                      placeholder="Enter verification code" 
+                      className="bg-white h-12 md:h-14 rounded-xl text-base pr-24 "
+                      value={otpCode}
+                      onChange={(e) => setOtpCode(e.target.value)}
+                    />
+                    <Button
+                      type="button"
+                      size="sm"
+                      onClick={handleVerifyOtp}
+                      disabled={!otpCode || otpCode.length < 6}
+                      className="absolute right-1 top-1/2 transform -translate-y-1/2 bg-[#FBDC00] hover:bg-[#e6ca00] text-black rounded-lg h-10 px-2 focus:ring-0"
+                    >
+                      Verify OTP
+                    </Button>
+                  </div>
                 )}
                 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
                   {/* Doctor Preference */}
-                  <div className="relative">
+                  <div className="relative doctor-dropdown-container">
                     <Input 
                       placeholder="Doctor Preference"
                       readOnly
-                      className="bg-white h-12 md:h-14 rounded-xl text-base w-full pr-10"
+                      className="bg-white h-12 md:h-14 rounded-xl text-base w-full pr-10 cursor-pointer"
                       value={form.watch("doctorPreference") ? 
                         form.watch("doctorPreference").replace(/-/g, ' ').replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase()) 
                         : ""}
+                      onClick={() => setShowDoctorDropdown(!showDoctorDropdown)}
                     />
-                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                      <div className="w-5 h-5 md:w-6 md:h-6 bg-[#FBDC00] rounded-full flex items-center justify-center">
-                        <ChevronDown className="h-3 w-3 md:h-4 md:w-4 text-black" />
+                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                      <div className={`w-5 h-5 md:w-6 md:h-6 bg-[#FBDC00] rounded-full flex items-center justify-center transition-colors duration-200`}>
+                        <ChevronDown className={`h-3 w-3 md:h-4 md:w-4 ${showDoctorDropdown ? 'text-black' : 'text-black'} transition-colors duration-200`} />
                       </div>
                     </div>
-                    <select 
-                      className="absolute inset-0 opacity-0 cursor-pointer"
-                      onChange={(e) => form.setValue("doctorPreference", e.target.value)}
-                    >
-                      <option value="" disabled selected>Doctor Preference</option>
-                      <option value="first-time-consultation">First Time Consultation</option>
-                      <option value="dr-jawahar-shah">Dr. Jawahar Shah</option>
-                      <option value="dr-rita-maity">Dr. Rita Maity</option>
-                      <option value="dr-bhavna-ahuja">Dr. Bhavna Ahuja</option>
-                      <option value="dr-nida-qazi">Dr. Nida Qazi</option>
-                    </select>
+                    
+                    {/* Custom dropdown menu */}
+                    {showDoctorDropdown && (
+                      <div className="absolute z-20 mt-1 w-full bg-white rounded-xl shadow-lg border border-[#1D9BD7]/20 overflow-hidden">
+                        <div className="max-h-60 py-1">
+                          <div className="px-4 py-2 text-sm font-medium text-[#1D9BD7] bg-[#1D9BD7]/5 border-l-2 border-[#1D9BD7]">
+                            Select Doctor Preference
+                          </div>
+                          <div className="py-1 px-2">
+                            <div className="cursor-pointer px-3 py-2 hover:bg-[#FBDC00]/10 rounded-lg text-sm" onClick={() => handleDoctorSelect("first-time-consultation")}>
+                              First Time Consultation
+                            </div>
+                            <div className="cursor-pointer px-3 py-2 hover:bg-[#FBDC00]/10 rounded-lg text-sm" onClick={() => handleDoctorSelect("dr-jawahar-shah")}>
+                              Dr. Jawahar Shah
+                            </div>
+                            <div className="cursor-pointer px-3 py-2 hover:bg-[#FBDC00]/10 rounded-lg text-sm" onClick={() => handleDoctorSelect("dr-rita-maity")}>
+                              Dr. Rita Maity
+                            </div>
+                            <div className="cursor-pointer px-3 py-2 hover:bg-[#FBDC00]/10 rounded-lg text-sm" onClick={() => handleDoctorSelect("dr-bhavna-ahuja")}>
+                              Dr. Bhavna Ahuja
+                            </div>
+                            <div className="cursor-pointer px-3 py-2 hover:bg-[#FBDC00]/10 rounded-lg text-sm" onClick={() => handleDoctorSelect("dr-nida-qazi")}>
+                              Dr. Nida Qazi
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                   
                   {/* City Input with autocomplete */}
                   <div className="relative city-dropdown-container">
                     <Input 
                       placeholder="Your City"
-                      className="bg-white h-12 md:h-14 rounded-xl text-base w-full"
+                      className={`bg-white h-12 md:h-14 rounded-xl text-base w-full   ${formValidationErrors.city ? 'border-white' : ''}`}
                       value={citySearchTerm}
                       {...form.register("city")}
                       onChange={(e) => {
@@ -711,11 +781,11 @@ export const BookingForm = () => {
                     
                     {/* City dropdown */}
                     {showCityDropdown && citySearchTerm && filteredCities.length > 0 && (
-                      <div className="absolute z-10 mt-1 w-full bg-white rounded-xl shadow-lg max-h-60 overflow-auto">
+                      <div className="absolute z-10 mt-1 w-full bg-white rounded-xl shadow-lg max-h-60 overflow-auto border border-[#1D9BD7]/20">
                         {filteredCities.map((city, index) => (
                           <div 
                             key={index}
-                            className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                            className="px-4 py-2 hover:bg-[#FBDC00]/10 cursor-pointer"
                             onClick={() => handleCitySelect(city)}
                           >
                             {city}
@@ -729,7 +799,7 @@ export const BookingForm = () => {
                 <div className="relative">
                   <Textarea 
                     placeholder="Tell us your symptoms or concern (refine it with AI for better clarity)" 
-                    className="bg-white min-h-[150px] sm:min-h-[150px] md:min-h-[180px] rounded-xl text-base resize-none p-3 md:p-4" 
+                    className="bg-white min-h-[150px] sm:min-h-[150px] md:min-h-[180px] rounded-xl text-base resize-none p-3 md:p-4"
                     {...form.register("problem")}
                   />
                   
@@ -740,7 +810,7 @@ export const BookingForm = () => {
                       size="sm"
                       onClick={handleRefineProblem}
                       disabled={isRefining || !problemText?.trim()}
-                      className="bg-white border border-[#FBDC00] hover:bg-[#FBDC00]/10 text-black rounded-lg flex items-center gap-2 h-9"
+                      className="bg-white border border-[#FBDC00] hover:bg-[#FBDC00]/10 text-black rounded-lg flex items-center gap-2 h-9 focus:ring-0 focus:ring-offset-0"
                     >
                       {isRefining ? (
                         <>
@@ -763,12 +833,6 @@ export const BookingForm = () => {
                   )}
                 </div>
                 
-                {otpStatus && (
-                  <div className="p-3 bg-blue-50 text-blue-700 rounded-md text-sm">
-                    {otpStatus}
-                  </div>
-                )}
-                
                 {submitSuccess && (
                   <div className="p-3 bg-green-50 text-green-700 rounded-md text-sm">
                     {submitSuccess}
@@ -783,7 +847,7 @@ export const BookingForm = () => {
                 
                 <Button 
                   type="submit" 
-                  className="w-full bg-[#FBDC00] hover:bg-[#FBDC00]/90 text-black font-semibold text-base md:text-lg h-12 md:h-14 rounded-xl"
+                  className="w-full bg-[#FBDC00] hover:bg-[#FBDC00]/90 text-black font-semibold text-base md:text-lg h-12 md:h-14 rounded-xl focus:ring-0 focus:ring-offset-0 border-0"
                   disabled={isSubmitting || !otpVerified}
                 >
                   {isSubmitting ? (
