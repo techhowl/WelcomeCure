@@ -18,7 +18,7 @@ export const DoctorCard: React.FC<DoctorCardProps> = ({
       <div className="flex md:flex-row flex-col items-center md:items-center gap-4">
         {/* Image container - fixed size for consistency */}
         <div className="md:w-[40%] w-full flex md:justify-center justify-start flex-shrink-0 mb-4 md:mb-0">
-          <div className="bg-[rgba(251,220,0,1)] w-1/2 md:w-full aspect-square  rounded-[7px] overflow-hidden">
+          <div className="bg-[rgba(251,220,0,1)] w-1/2 md:w-full aspect-square rounded-[7px] overflow-hidden">
             <img
               src={image}
               alt={name}

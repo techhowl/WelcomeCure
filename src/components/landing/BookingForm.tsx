@@ -24,15 +24,22 @@ const OTP_CAMPAIGN_NAME = "otp_verification"; // Campaign name in AiSensy
 
 // Major Indian cities list
 const indianCities = [
-  "Mumbai", "Delhi", "Bangalore", "Hyderabad", "Chennai", "Kolkata", 
-  "Ahmedabad", "Pune", "Jaipur", "Lucknow", "Kanpur", "Nagpur", 
-  "Indore", "Thane", "Bhopal", "Visakhapatnam", "Patna", "Vadodara", 
-  "Ghaziabad", "Ludhiana", "Agra", "Nashik", "Faridabad", "Meerut", 
-  "Rajkot", "Varanasi", "Srinagar", "Aurangabad", "Dhanbad", "Amritsar", 
-  "Navi Mumbai", "Allahabad", "Ranchi", "Howrah", "Coimbatore", "Jabalpur", 
-  "Gwalior", "Vijayawada", "Jodhpur", "Madurai", "Raipur", "Kota", 
-  "Chandigarh", "Guwahati", "Solapur", "Hubli", "Dharwad", "Mysore", 
-  "Tiruchirappalli", "Bareilly", "Aligarh", "Moradabad", "Gorakhpur"
+ "Mumbai", "Delhi", "Bangalore", "Hyderabad", "Chennai", "Kolkata", 
+"Ahmedabad", "Pune", "Jaipur", "Lucknow", "Kanpur", "Nagpur", 
+"Indore", "Thane", "Bhopal", "Visakhapatnam", "Patna", "Vadodara", 
+"Ghaziabad", "Ludhiana", "Agra", "Nashik", "Faridabad", "Meerut", 
+"Rajkot", "Varanasi", "Srinagar", "Aurangabad", "Dhanbad", "Amritsar", 
+"Navi Mumbai", "Allahabad", "Ranchi", "Howrah", "Coimbatore", "Jabalpur", 
+"Gwalior", "Vijayawada", "Jodhpur", "Madurai", "Raipur", "Kota", 
+"Chandigarh", "Guwahati", "Solapur", "Hubli", "Dharwad", "Mysore", 
+"Tiruchirappalli", "Bareilly", "Aligarh", "Moradabad", "Gorakhpur",
+"Salem", "Warangal", "Tiruppur", "Bhavnagar", "Cuttack", "Ujjain",
+"Bellary", "Thiruvananthapuram", "Bhilai", "Noida", "Firozabad",
+"Rourkela", "Bhagalpur", "Muzaffarpur", "Bhiwandi", "Saharanpur",
+"Guntur", "Bikaner", "Amravati", "Jamshedpur", "Bokaro", "Jhansi",
+"Panipat", "Loni", "Kakinada", "Mangalore", "Erode", "Nellore",
+"Bilaspur", "Tirunelveli", "Malegaon", "Udaipur", "Davanagere",
+"Kozhikode", "Akola", "Kolhapur", "Nanded", "Ajmer", "Ichalkaranji"
 ];
 
 interface BookingFormData {
@@ -579,9 +586,9 @@ export const BookingForm = () => {
           </div>
 
           {/* Right side with form */}
-          <div className="p-4 sm:p-6 md:p-8 rounded-bl-xl rounded-br-xl lg:rounded-bl-none lg:rounded-tr-xl bg-[#B5E7FF]/40">
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2 md:space-y-8">
+          <div className="p-2 sm:p-6 md:p-8 rounded-bl-xl rounded-br-xl lg:rounded-bl-none lg:rounded-tr-xl bg-[#B5E7FF]/40">
+            <Form {...form}  >
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 md:space-y-8">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
                   <Input 
                     placeholder="Full Name" 
@@ -721,8 +728,8 @@ export const BookingForm = () => {
                 
                 <div className="relative">
                   <Textarea 
-                    placeholder="Explain your symptoms or health concerns (click 'Refine with AI' to improve your description)" 
-                    className="bg-white min-h-[120px] sm:min-h-[150px] md:min-h-[180px] rounded-xl text-base resize-none p-3 md:p-4" 
+                    placeholder="Tell us your symptoms or concern (refine it with AI for better clarity)" 
+                    className="bg-white min-h-[150px] sm:min-h-[150px] md:min-h-[180px] rounded-xl text-base resize-none p-3 md:p-4" 
                     {...form.register("problem")}
                   />
                   

@@ -115,7 +115,7 @@ export const DoctorsSection: React.FC = () => {
         Our Experienced Team of Doctors
       </h2>
       
-      <div className="max-w-[1400px] p-10 mx-auto relative">
+      <div className="max-w-[1400px] md:p-10 p-4 mx-auto relative">
         {/* Left Arrow */}
         <button 
           onClick={handlePrev}
