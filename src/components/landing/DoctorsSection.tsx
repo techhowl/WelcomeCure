@@ -1,13 +1,36 @@
 import React, { useState, useEffect } from "react";
 import { DoctorCard } from "./DoctorCard";
 
-// Doctor data moved from index.tsx to this component
+// Doctor data updated with actual image paths from assets folder
 const doctorsData = [
+  {
+    name: "Dr. Bhavna Ahuja",
+    experience: "18 Years of Experience",
+    description: "Profound insights into chronic and complex cases.",
+    image: "/assets/Dr. Bhavna Ahuja (1).jpg",
+  },
+  {
+    name: "Dr. Nida Qazi",
+    experience: "13 Years of Experience",
+    description: "Specializing in acute and chronic conditions with precision.",
+    image: "/assets/Dr. Nida Qazi (1).jpg",
+  },
+  {
+    name: "Dr. Tarana Malick",
+    experience: "20 Years of Experience",
+    description: "Expert in integrative medicine with a patient-centered approach.",
+    image: "/assets/Dr. Tarana Malick (1).jpg",
+  },
+  {
+    name: "Dr. Nishtha",
+    experience: "15 Years of Experience",
+    description: "Specializing in pediatric care with gentle and effective treatments.",
+    image: "/assets/dr.-Nishtha (1).jpg",
+  },
   {
     name: "Dr. Jawahar Shah",
     experience: "45 Years of Experience",
-    description:
-      "A global leader in homeopathy, revolutionizing holistic healthcare.",
+    description: "A global leader in homeopathy, revolutionizing holistic healthcare.",
     image: "https://cdn.builder.io/api/v1/image/assets/TEMP/6d81535e6308922d7767213c62cd29b3786a14ca?placeholderIfAbsent=true",
   },
   {
@@ -17,44 +40,15 @@ const doctorsData = [
     image: "https://cdn.builder.io/api/v1/image/assets/TEMP/6d81535e6308922d7767213c62cd29b3786a14ca?placeholderIfAbsent=true",
   },
   {
-    name: "Dr. Bhavna Ahuja",
-    experience: "18 Years of Experience",
-    description: "Profound insights into chronic and complex cases.",
-    image: "https://cdn.builder.io/api/v1/image/assets/TEMP/6d81535e6308922d7767213c62cd29b3786a14ca?placeholderIfAbsent=true",
-  },
-  {
-    name: "Dr. Nida Qazi",
-    experience: "13 Years of Experience",
-    description:
-      "Specializing in acute and chronic conditions with precision.",
-    image: "https://cdn.builder.io/api/v1/image/assets/TEMP/6d81535e6308922d7767213c62cd29b3786a14ca?placeholderIfAbsent=true",
-  },
-  {
-    name: "Dr. Anisha Patel",
-    experience: "20 Years of Experience",
-    description:
-      "Expert in integrative medicine with a patient-centered approach.",
-    image: "https://cdn.builder.io/api/v1/image/assets/TEMP/6d81535e6308922d7767213c62cd29b3786a14ca?placeholderIfAbsent=true",
-  },
-  {
     name: "Dr. Sameer Gupta",
     experience: "22 Years of Experience",
-    description:
-      "Pioneering research in homeopathic treatments for modern ailments.",
-    image: "https://cdn.builder.io/api/v1/image/assets/TEMP/6d81535e6308922d7767213c62cd29b3786a14ca?placeholderIfAbsent=true",
-  },
-  {
-    name: "Dr. Priya Sharma",
-    experience: "15 Years of Experience",
-    description:
-      "Specializing in pediatric care with gentle and effective treatments.",
+    description: "Pioneering research in homeopathic treatments for modern ailments.",
     image: "https://cdn.builder.io/api/v1/image/assets/TEMP/6d81535e6308922d7767213c62cd29b3786a14ca?placeholderIfAbsent=true",
   },
   {
     name: "Dr. Vikram Mehta",
     experience: "25 Years of Experience",
-    description:
-      "Renowned for his innovative approach to chronic disease management.",
+    description: "Renowned for his innovative approach to chronic disease management.",
     image: "https://cdn.builder.io/api/v1/image/assets/TEMP/6d81535e6308922d7767213c62cd29b3786a14ca?placeholderIfAbsent=true",
   },
 ];

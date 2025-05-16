@@ -14,7 +14,7 @@ export const TestimonialCard: React.FC<TestimonialCardProps> = ({
   avatar,
 }) => {
   return (
-    <div className="bg-[rgba(181,231,255,1)] border flex w-full flex-col h-auto min-h-[350px] font-medium p-8 rounded-[15px] border-[rgba(230,230,230,1)] border-solid max-md:max-w-full max-md:mt-7 max-md:px-5">
+    <div className="bg-[rgba(181,231,255,1)] border flex w-full flex-col h-auto min-h-[400px] font-medium p-8 rounded-[15px] border-[rgba(230,230,230,1)] border-solid max-md:max-w-full max-md:mt-7 max-md:px-5">
       <p className="text-black text-lg leading-[27px] flex-grow max-md:max-w-full line-clamp-[8]">
         {quote}
       </p>

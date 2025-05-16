@@ -53,6 +53,13 @@ export const Testimonials = () => {
     pauseOnHover: true,
     responsive: [
       {
+        breakpoint: 1900,
+        settings: {
+          slidesToShow: 3,
+          slidesToScroll: 1,
+        },
+      },
+      {
         breakpoint: 1300,
         settings: {
           slidesToShow: 2,
@@ -62,7 +69,7 @@ export const Testimonials = () => {
       {
         breakpoint: 1100,
         settings: {
-          slidesToShow: 1,
+          slidesToShow: 2,
           slidesToScroll: 1,
         },
       },

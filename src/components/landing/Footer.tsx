@@ -16,7 +16,7 @@ export const Footer = () => {
         <div className="flex flex-col items-start w-full md:w-auto">
         <div>
             <img 
-              src="/assets/Logo.svg" 
+              src="/assets/Logonew.svg" 
               alt="WelcomeCure Logo" 
               width={100}
               height={100}
