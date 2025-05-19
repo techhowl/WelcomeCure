@@ -31,7 +31,7 @@ const doctorsData = [
     name: "Dr. Jawahar Shah",
     experience: "45 Years of Experience",
     description: "A global leader in homeopathy, revolutionizing holistic healthcare.",
-    image: "https://cdn.builder.io/api/v1/image/assets/TEMP/6d81535e6308922d7767213c62cd29b3786a14ca?placeholderIfAbsent=true",
+    image: "/assets/Dr Shah.jpg",
   },
   {
     name: "Dr. Rita Maity",

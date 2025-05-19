@@ -13,7 +13,7 @@ export const HeroSection = () => {
     // Function to create a new text element
     const createTextElement = (text: string) => {
       const div = document.createElement("div");
-      div.className = "text-[40px] md:text-[56px] font-bold leading-none tracking-tight text-[#1D9BD7] absolute w-full";
+      div.className = "text-[40px] md:text-[66px] font-extrabold leading-none tracking-tight text-[#1D9BD7] absolute w-full";
       div.style.opacity = "0";
       
       // Split text into individual spans for letter animation
@@ -110,10 +110,10 @@ export const HeroSection = () => {
   };
   
   return <div className="w-full h-auto sm:h-screen relative flex flex-col md:flex-row items-center justify-between pt-24 px-4 md:px-0">
-      <div className="container h-auto mx-auto px-4 md:px-8 flex flex-col md:flex-row items-center">
-        <div className="w-full md:w-1/2 flex flex-col justify-center py-8 md:py-16 z-10">
+      <div className="container h-auto mx-auto px-4 md:px-8  flex flex-col md:flex-row items-center">
+        <div className="w-full md:w-1/2 flex flex-col md:gap-3 justify-center py-8 md:py-24 z-10">
           {/* Heading */}
-          <h1 className="text-base lg:text-xl xl:text-2xl [@media(min-width:1100px)]:text-3xl [@media(min-width:1300px)]:text-4xl [@media(min-width:1600px)]:text-4xl leading-tight tracking-tight text-[#1A1A1A] font-normal mb-6 text-left md:text-left">
+          <h1 className="text-base lg:text-xl xl:text-2xl [@media(min-width:1100px)]:text-3xl [@media(min-width:1300px)]:text-4xl [@media(min-width:1600px)]:text-5xl leading-tight tracking-tight text-[#1A1A1A] font-normal mb-6 text-left md:text-left">
             Bad sleep quality makes<br />
             you more prone to
           </h1>

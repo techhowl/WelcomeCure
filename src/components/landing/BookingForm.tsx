@@ -20,7 +20,7 @@ const EMAILJS_PUBLIC_KEY = 'LYPZPgE_KJW9Fka5-';
 // AiSensy OTP service credentials
 const AISENSY_API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1NjFiZTUyYTk3NTIzN2ZjMmE0NmM2NyIsIm5hbWUiOiJXZWxjb21lQ3VyZSIsImFwcE5hbWUiOiJBaVNlbnN5IiwiY2xpZW50SWQiOiI2NTBjMGNkMGIyMTlmYzIwNmQ0NjNjMzAiLCJhY3RpdmVQbGFuIjoiTk9ORSIsImlhdCI6MTcwMDkwNDUzMH0.iuMUtjZ2MGRc2jnpBJFUHOmKeJlWGghNKc4MFJb9pCA";
 const AISENSY_API_URL = "https://backend.aisensy.com/campaign/t1/api/v2";
-const OTP_CAMPAIGN_NAME = "otp_verification"; // Campaign name in AiSensy
+const OTP_CAMPAIGN_NAME = "otp_verification_trail1"; // Updated to new campaign name
 
 // Major Indian cities list
 const indianCities = [
@@ -77,14 +77,14 @@ const sendOtpViaWhatsApp = async (formData: BookingFormData) => {
     // Get first name for template parameter
     const firstName = formData.fullName.split(' ')[0] || 'user';
     
-    // Keep the original structure but use the unique OTP
+    // Use the updated payload structure from curl example with $FirstName
     const otpPayload = {
       apiKey: AISENSY_API_KEY,
       campaignName: OTP_CAMPAIGN_NAME,
       destination: phoneNumber,
       userName: "WelcomeCure",
       templateParams: [
-        firstName
+        "$FirstName"
       ],
       source: "new-landing-page form",
       media: {},
@@ -181,9 +181,6 @@ const callGeminiAPI = async (text: string): Promise<string> => {
 // Direct Google Sheets submission function
 const submitToGoogleSheets = async (formData: BookingFormData) => {
   try {
-    console.log('Submitting form data:', formData);
-    console.log('City value being sent:', formData.city); // Add logging for city value
-    
     // Method 1: Try fetch with no-cors first
     try {
       await fetch(GOOGLE_SCRIPT_URL, {
@@ -194,11 +191,8 @@ const submitToGoogleSheets = async (formData: BookingFormData) => {
         },
         body: JSON.stringify(formData),
       });
-      console.log('Form submitted using fetch no-cors method');
       return { success: true };
     } catch (fetchError) {
-      console.warn('Fetch submission failed, trying fallback method:', fetchError);
-      
       // Method 2: Fallback - Submit via URL parameters (GET request)
       const params = new URLSearchParams();
       params.append('fullName', formData.fullName);
@@ -206,8 +200,8 @@ const submitToGoogleSheets = async (formData: BookingFormData) => {
       params.append('email', formData.email);
       params.append('phone', formData.phone);
       params.append('doctorPreference', formData.doctorPreference || '');
-      params.append('city', formData.city || ''); // Ensure city is included
-      params.append('problem', formData.problem || '');
+      params.append('problem', formData.problem || ''); // Fixed: problem goes to column G
+      params.append('city', formData.city || ''); // Fixed: city goes to column H
       
       // Create image for tracking submission (invisible)
       const img = document.createElement('img');
@@ -220,11 +214,9 @@ const submitToGoogleSheets = async (formData: BookingFormData) => {
         document.body.removeChild(img);
       }, 5000);
       
-      console.log('Form submitted using URL parameters method');
       return { success: true };
     }
   } catch (error) {
-    console.error('Error submitting to Google Sheets:', error);
     throw error;
   }
 };
@@ -345,22 +337,7 @@ export const BookingForm = () => {
   // Initialize EmailJS
   useEffect(() => {
     try {
-      console.log('Initializing EmailJS with public key:', EMAILJS_PUBLIC_KEY);
       emailjs.init(EMAILJS_PUBLIC_KEY);
-      
-      // Test EmailJS configuration
-      const testConfig = async () => {
-        try {
-          console.log('Testing EmailJS configuration...');
-          console.log('Service ID:', EMAILJS_SERVICE_ID);
-          console.log('Admin Template ID:', EMAILJS_TEMPLATE_ID);
-          console.log('User Template ID:', EMAILJS_USER_TEMPLATE_ID);
-        } catch (error) {
-          console.error('Error testing EmailJS configuration:', error);
-        }
-      };
-      
-      testConfig();
     } catch (error) {
       console.error('Failed to initialize EmailJS:', error);
     }
@@ -464,14 +441,10 @@ export const BookingForm = () => {
           .replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase())
       };
       
-      console.log('Form submission - user email:', data.email);
-      
       // Send data to Google Sheets directly
       try {
         await submitToGoogleSheets(formattedData);
-        console.log('Data successfully submitted to Google Sheets');
       } catch (sheetError) {
-        console.error('Google Sheets submission error:', sheetError);
         // Continue with email sending even if sheets submission fails
       }
       
@@ -480,13 +453,8 @@ export const BookingForm = () => {
       try {
         const emailResult = await sendConfirmationEmail(data);
         userEmailSent = emailResult.success;
-        if (userEmailSent) {
-          console.log('Confirmation email successfully sent to user');
-        } else {
-          console.error('Failed to send confirmation email to user');
-        }
       } catch (emailError) {
-        console.error('Exception sending confirmation email:', emailError);
+        // Handle email error silently
       }
       
       // Send notification to admin
@@ -494,13 +462,8 @@ export const BookingForm = () => {
       try {
         const adminResult = await sendAdminNotification(data);
         adminEmailSent = adminResult.success;
-        if (adminEmailSent) {
-          console.log('Admin notification email sent successfully');
-        } else {
-          console.error('Failed to send admin notification');
-        }
       } catch (emailError) {
-        console.error('Exception sending admin notification:', emailError);
+        // Handle email error silently
       }
       
       // Show success message and reset form
@@ -519,7 +482,6 @@ export const BookingForm = () => {
       setGeneratedOtp(null);
       
     } catch (error) {
-      console.error('Error submitting form:', error);
       setSubmitError(error instanceof Error ? error.message : 'An unexpected error occurred');
     } finally {
       setIsSubmitting(false);

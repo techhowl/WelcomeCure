@@ -1,6 +1,6 @@
 const AISENSY_API_URL = 'https://backend.aisensy.com/campaign/t1/api/v2';
 const AISENSY_API_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1NjFiZTUyYTk3NTIzN2ZjMmE0NmM2NyIsIm5hbWUiOiJXZWxjb21lQ3VyZSIsImFwcE5hbWUiOiJBaVNlbnN5IiwiY2xpZW50SWQiOiI2NTBjMGNkMGIyMTlmYzIwNmQ0NjNjMzAiLCJhY3RpdmVQbGFuIjoiTk9ORSIsImlhdCI6MTcwMDkwNDUzMH0.iuMUtjZ2MGRc2jnpBJFUHOmKeJlWGghNKc4MFJb9pCA';
-const OTP_CAMPAIGN_NAME = 'otp_verification';
+const OTP_CAMPAIGN_NAME = 'otp_verification_trail1';
 const SUCCESS_CAMPAIGN_NAME = 'booking_success'; // Your confirmation template name
 
 interface BookingFormData {
@@ -34,7 +34,9 @@ export const sendOtpMessage = async (formData: BookingFormData, uniqueOTP: strin
       campaignName: OTP_CAMPAIGN_NAME,
       destination: phoneNumber,
       userName: "WelcomeCure",
-      templateParams: [firstName],
+      templateParams: [
+        "$FirstName"
+      ],
       source: "new-landing-page form",
       media: {},
       buttons: [

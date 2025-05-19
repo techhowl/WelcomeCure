@@ -8,6 +8,7 @@ import { Testimonials } from "@/components/landing/Testimonials";
 import { DoctorsSection } from "@/components/landing/DoctorsSection";
 import { FAQ } from "@/components/landing/FAQ";
 import { Footer } from "@/components/landing/Footer";
+import { FloatingButton } from "@/components/layout/FloatingButton";
 
 const Index = () => {
   return (
@@ -23,6 +24,7 @@ const Index = () => {
         <FAQ />
         <Footer />
       </div>
+      <FloatingButton />
     </div>
   );
 };
